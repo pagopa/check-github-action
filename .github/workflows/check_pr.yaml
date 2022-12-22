@@ -45,10 +45,10 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.issues.createComment({
-                  issue_number: context.issue.number,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  body: 'This pull request does not contain a valid label. Please add one of the following labels: `['bug', 'enhancement', 'breaking-change', 'ignore-for-release']`'
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'This pull request does not contain a valid label. Please add one of the following labels: `['bug', 'enhancement', 'breaking-change', 'ignore-for-release']`'
             })
             core.setFailed('Missing required labels')
 
@@ -61,5 +61,37 @@ jobs:
          with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const result = context.payload.pull_request
-            console.log(result)
+            const additions = context.payload.pull_request.additions || 0
+            const deletions = context.payload.pull_request.deletions || 0
+
+            if (additions + deletions < 150){
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['size/small']
+              })              
+            }
+
+            if (additions + deletions > 450){
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['size/large']
+              })
+              github.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: 'This PR exceeds the recommended size of 450 lines. Please make sure you are NOT addressing multiple issues with one PR. 
+                _Note this PR might be rejected due to its size._'
+              })
+              core.setFailed('Missing required labels')
+            }
+  
+  auto_update:
+    name: Code
+    steps:
+      - name: EditorConfig-Action
+        uses: zbeekman/EditorConfig-Action@v1.1.1
