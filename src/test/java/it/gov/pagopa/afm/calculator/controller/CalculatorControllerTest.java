@@ -26,37 +26,37 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 class CalculatorControllerTest {
 
-    @MockBean
-    CalculatorService calculatorService;
+  @MockBean CalculatorService calculatorService;
 
-    @Autowired
-    private MockMvc mvc;
+  @Autowired private MockMvc mvc;
 
-    @BeforeEach
-    void setup() throws IOException {
-        List<Transfer> result = TestUtil.readObjectFromFile("responses/getFees.json", List.class);
-        when(calculatorService.calculate(any(), anyInt())).thenReturn(result);
-    }
+  @BeforeEach
+  void setup() throws IOException {
+    List<Transfer> result = TestUtil.readObjectFromFile("responses/getFees.json", List.class);
+    when(calculatorService.calculate(any(), anyInt())).thenReturn(result);
+  }
 
-    @Test
-    void getFeesByPsp() throws Exception {
-        var paymentOption = TestUtil.readObjectFromFile("requests/getFees.json", PaymentOption.class);
+  @Test
+  void getFeesByPsp() throws Exception {
+    var paymentOption = TestUtil.readObjectFromFile("requests/getFees.json", PaymentOption.class);
 
-        mvc
-            .perform(
-                post("/psps/12345/fees").content(TestUtil.toJson(paymentOption)).contentType(MediaType.APPLICATION_JSON)
-            )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-    }
+    mvc.perform(
+            post("/psps/12345/fees")
+                .content(TestUtil.toJson(paymentOption))
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
 
-    @Test
-    void getFees() throws Exception {
-        var paymentOption = TestUtil.readObjectFromFile("requests/getFees.json", PaymentOption.class);
+  @Test
+  void getFees() throws Exception {
+    var paymentOption = TestUtil.readObjectFromFile("requests/getFees.json", PaymentOption.class);
 
-        mvc
-            .perform(post("/fees").content(TestUtil.toJson(paymentOption)).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-    }
+    mvc.perform(
+            post("/fees")
+                .content(TestUtil.toJson(paymentOption))
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
 }

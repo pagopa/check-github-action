@@ -11,7 +11,7 @@ import lombok.ToString;
 @ToString
 public class TransferListItem {
 
-    private String creditorInstitution;
-    private String transferCategory;
-    private Boolean digitalStamp;
+  private String creditorInstitution;
+  private String transferCategory;
+  private Boolean digitalStamp;
 }
