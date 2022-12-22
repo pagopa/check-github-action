@@ -96,8 +96,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: eclint
-        uses: reviewdog/action-eclint@v1
+      - name: EditorConfig-Action
+        uses: zbeekman/EditorConfig-Action@v1.1.1
         env:
           # Only lint files changed in the push.
           ALWAYS_LINT_ALL_FILES: true
