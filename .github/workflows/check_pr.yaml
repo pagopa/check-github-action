@@ -42,7 +42,7 @@ jobs:
         if: ${{ !contains(github.event.pull_request.labels.*.name, 'breaking-change') && !contains(github.event.pull_request.labels.*.name, 'enhancement') && !contains(github.event.pull_request.labels.*.name, 'bug') && !contains(github.event.pull_request.labels.*.name, 'ignore-for-release') }}
         uses: actions/github-script@v6.3.3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -60,7 +60,7 @@ jobs:
       - name: Check Size
         uses: actions/github-script@v6.3.3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const additions = context.payload.pull_request.additions || 0
             const deletions = context.payload.pull_request.deletions || 0
@@ -94,15 +94,8 @@ jobs:
     name: Code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: EditorConfig-Action
-        uses: zbeekman/EditorConfig-Action@v1.1.1
-        env:
-          # Only lint files changed in the push.
-          ALWAYS_LINT_ALL_FILES: true
-
-          # Automatic error fixing not yet supported by EditorConfig-Action.
-          # Forced off to avoid unintentionally enabling when upgrading to
-          # new version.
-          EC_FIX_ERROR: false
+      - uses: axel-op/googlejavaformat-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
