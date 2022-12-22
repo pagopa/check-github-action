@@ -11,9 +11,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   repository-projects: write
+  packages: write
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -102,6 +103,3 @@ jobs:
       - uses: axel-op/googlejavaformat-action@v3
         with:
           args: "--replace"
-          skip-commit: true
-      - name: Print diffs
-        run: git --no-pager diff --exit-code
