@@ -102,4 +102,11 @@ jobs:
       - uses: axel-op/googlejavaformat-action@v3
         with:
           args: "--replace"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-commit: true
+
+      - name: Commit & Push changes
+        run: |
+          git config --global user.name 'action-bot' 
+          git add -A
+          git commit -m "Auto Update Openapi and Swagger" || true
+          git push
