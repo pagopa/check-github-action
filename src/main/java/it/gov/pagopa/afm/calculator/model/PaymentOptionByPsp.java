@@ -16,6 +16,5 @@ public class PaymentOptionByPsp {
   private PaymentMethod paymentMethod;
   private String touchpoint;
 
-  @Valid
-  private ArrayList<TransferListItem> transferList;
+  @Valid private ArrayList<TransferListItem> transferList;
 }

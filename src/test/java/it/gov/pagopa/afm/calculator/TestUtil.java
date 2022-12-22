@@ -64,39 +64,37 @@ public class TestUtil {
   }
 
   public static ValidBundle getMockGlobalValidBundle() {
-    return ValidBundle
-      .builder()
-      .id("2")
-      .name("bundle2")
-      .idPsp("123")
-      .paymentAmount(2L)
-      .minPaymentAmount(0L)
-      .maxPaymentAmount(1000L)
-      .type(BundleType.GLOBAL)
-      .touchpoint("1")
-      .paymentMethod(PaymentMethod.CP)
-      .onUs(true)
-      .build();
+    return ValidBundle.builder()
+        .id("2")
+        .name("bundle2")
+        .idPsp("123")
+        .paymentAmount(2L)
+        .minPaymentAmount(0L)
+        .maxPaymentAmount(1000L)
+        .type(BundleType.GLOBAL)
+        .touchpoint("1")
+        .paymentMethod(PaymentMethod.CP)
+        .onUs(true)
+        .build();
   }
 
   public static ValidBundle getMockValidBundle() {
-    return ValidBundle
-      .builder()
-      .id("1")
-      .name("bundle1")
-      .idPsp("ABC")
-      .paymentAmount(1L)
-      .minPaymentAmount(0L)
-      .maxPaymentAmount(1000L)
-      .type(BundleType.PUBLIC)
-      .touchpoint("1")
-      .paymentMethod(PaymentMethod.CP)
-      .transferCategoryList(List.of("TAX1"))
-      .ciBundleList(Collections.singletonList(getMockCiBundle()))
-      .digitalStamp(false)
-      .digitalStampRestriction(false)
-      .onUs(true)
-      .build();
+    return ValidBundle.builder()
+        .id("1")
+        .name("bundle1")
+        .idPsp("ABC")
+        .paymentAmount(1L)
+        .minPaymentAmount(0L)
+        .maxPaymentAmount(1000L)
+        .type(BundleType.PUBLIC)
+        .touchpoint("1")
+        .paymentMethod(PaymentMethod.CP)
+        .transferCategoryList(List.of("TAX1"))
+        .ciBundleList(Collections.singletonList(getMockCiBundle()))
+        .digitalStamp(false)
+        .digitalStampRestriction(false)
+        .onUs(true)
+        .build();
   }
 
   public static Touchpoint getMockTouchpoints() {
@@ -104,21 +102,19 @@ public class TestUtil {
   }
 
   private static CiBundle getMockCiBundle() {
-    return CiBundle
-      .builder()
-      .id("1")
-      .ciFiscalCode("77777777777")
-      .attributes(List.of(getMockCiBundleAttribute()))
-      .build();
+    return CiBundle.builder()
+        .id("1")
+        .ciFiscalCode("77777777777")
+        .attributes(List.of(getMockCiBundleAttribute()))
+        .build();
   }
 
   private static CiBundleAttribute getMockCiBundleAttribute() {
-    return CiBundleAttribute
-      .builder()
-      .id("1")
-      .maxPaymentAmount(10L)
-      .transferCategory("TAX1")
-      .transferCategoryRelation(TransferCategoryRelation.EQUAL)
-      .build();
+    return CiBundleAttribute.builder()
+        .id("1")
+        .maxPaymentAmount(10L)
+        .transferCategory("TAX1")
+        .transferCategoryRelation(TransferCategoryRelation.EQUAL)
+        .build();
   }
 }

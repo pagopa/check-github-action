@@ -22,11 +22,9 @@ import lombok.experimental.SuperBuilder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Touchpoint {
 
-  @Id
-  private String id;
+  @Id private String id;
 
-  @PartitionKey
-  private String name;
+  @PartitionKey private String name;
 
   private LocalDateTime creationDate;
 }

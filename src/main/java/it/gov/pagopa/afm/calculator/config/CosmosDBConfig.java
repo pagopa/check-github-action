@@ -44,18 +44,17 @@ public class CosmosDBConfig extends AbstractCosmosConfiguration {
     var directConnectionConfig = new DirectConnectionConfig();
     var gatewayConnectionConfig = new GatewayConnectionConfig();
     return new CosmosClientBuilder()
-      .endpoint(cosmosUri)
-      .credential(azureKeyCredential)
-      .directMode(directConnectionConfig, gatewayConnectionConfig);
+        .endpoint(cosmosUri)
+        .credential(azureKeyCredential)
+        .directMode(directConnectionConfig, gatewayConnectionConfig);
   }
 
   @Override
   public CosmosConfig cosmosConfig() {
-    return CosmosConfig
-      .builder()
-      .enableQueryMetrics(cosmosQueryMetrics)
-      .responseDiagnosticsProcessor(new ResponseDiagnosticsProcessorImplementation())
-      .build();
+    return CosmosConfig.builder()
+        .enableQueryMetrics(cosmosQueryMetrics)
+        .responseDiagnosticsProcessor(new ResponseDiagnosticsProcessorImplementation())
+        .build();
   }
 
   @Override
@@ -64,7 +63,7 @@ public class CosmosDBConfig extends AbstractCosmosConfiguration {
   }
 
   private static class ResponseDiagnosticsProcessorImplementation
-    implements ResponseDiagnosticsProcessor {
+      implements ResponseDiagnosticsProcessor {
 
     @Override
     public void processResponseDiagnostics(@Nullable ResponseDiagnostics responseDiagnostics) {
