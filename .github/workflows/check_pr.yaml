@@ -1,9 +1,11 @@
 name: Check PR
 
-on: 
+# Controls when the workflow will run
+on:
   pull_request:
     branches:
       - main
+    types: [ opened, synchronize, labeled, unlabeled, reopened, edited ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -12,28 +14,90 @@ permissions:
   contents: read
   pull-requests: write
 
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  labeler:
+  auto_assign:
+    name: Auto Assign
+
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    name: Label the PR size
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: codelytv/pr-size-labeler@v1.8.1
+      - name: Assign Me
+        # You may pin to the exact commit or the version.
+        uses: kentaro-m/auto-assign-action@v1.2.1
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          xs_label: 'size/xs'
-          xs_max_size: '1'
-          s_label: 'size/s'
-          s_max_size: '8'
-          m_label: 'size/m'
-          m_max_size: '9'
-          l_label: 'size/l'
-          l_max_size: '10'
-          xl_label: 'size/xl'
-          fail_if_xl: 'true'
-          message_if_xl: >
-            This PR exceeds the recommended size of 1000 lines.
-            Please make sure you are NOT addressing multiple issues with one PR.
-            Note this PR might be rejected due to its size.
-          github_api_url: 'api.github.com'
-          files_to_ignore: ''
+          configuration-path: '.github/auto_assign.yml'
+
+  check_labels:
+    name: Check Required Labels
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Verify PR Labels
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'breaking-change') && !contains(github.event.pull_request.labels.*.name, 'enhancement') && !contains(github.event.pull_request.labels.*.name, 'bug') && !contains(github.event.pull_request.labels.*.name, 'ignore-for-release') }}
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'This pull request does not contain a valid label. Please add one of the following labels: `[bug, enhancement, breaking-change, ignore-for-release]`'
+            })
+            core.setFailed('Missing required labels')
+
+
+  check_size:
+    runs-on: ubuntu-latest
+    name: Check Size
+    steps:
+      - name: Check Size
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const additions = context.payload.pull_request.additions || 0
+            const deletions = context.payload.pull_request.deletions || 0
+
+            if (additions + deletions < 150){
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['size/small']
+              })
+            }
+
+            if (additions + deletions > 450){
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['size/large']
+              })
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: 'This PR exceeds the recommended size of 450 lines. Please make sure you are NOT addressing multiple issues with one PR. _Note this PR might be rejected due to its size._'
+              })
+              core.setFailed('Missing required labels')
+            }
+
+  auto_update:
+    name: Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: EditorConfig-Action
+        uses: zbeekman/EditorConfig-Action@v1.1.1
+        env:
+          ALWAYS_LINT_ALL_FILES: false
+          EC_FIX_ERROR: false
