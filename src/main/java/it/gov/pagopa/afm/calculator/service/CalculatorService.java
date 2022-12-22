@@ -24,9 +24,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CalculatorService {
 
-  @Autowired CosmosRepository cosmosRepository;
+  @Autowired
+  CosmosRepository cosmosRepository;
 
-  @Autowired UtilityComponent utilityComponent;
+  @Autowired
+  UtilityComponent utilityComponent;
 
   @Cacheable(value = "calculate")
   public List<Transfer> calculate(@Valid PaymentOption paymentOption, int limit) {
@@ -37,10 +39,14 @@ public class CalculatorService {
   }
 
   private List<Transfer> calculateTaxPayerFee(
-      PaymentOption paymentOption, int limit, List<ValidBundle> bundles) {
-    boolean primaryCiInTransferList =
-        inTransferList(
-            paymentOption.getPrimaryCreditorInstitution(), paymentOption.getTransferList());
+    PaymentOption paymentOption,
+    int limit,
+    List<ValidBundle> bundles
+  ) {
+    boolean primaryCiInTransferList = inTransferList(
+      paymentOption.getPrimaryCreditorInstitution(),
+      paymentOption.getTransferList()
+    );
     List<Transfer> transfers = new ArrayList<>();
     for (ValidBundle bundle : bundles) {
       // if primaryCi is in transfer list we should evaluate the related incurred fee
@@ -67,58 +73,77 @@ public class CalculatorService {
    * @param bundle Bundle info
    */
   private void analyzeTransferList(
-      List<Transfer> transfers, PaymentOption paymentOption, ValidBundle bundle) {
-    List<String> primaryTransferCategoryList =
-        utilityComponent.getPrimaryTransferCategoryList(
-            paymentOption, paymentOption.getPrimaryCreditorInstitution());
-    var ciBundles =
-        bundle.getCiBundleList() != null ? bundle.getCiBundleList() : new ArrayList<CiBundle>();
+    List<Transfer> transfers,
+    PaymentOption paymentOption,
+    ValidBundle bundle
+  ) {
+    List<String> primaryTransferCategoryList = utilityComponent.getPrimaryTransferCategoryList(
+      paymentOption,
+      paymentOption.getPrimaryCreditorInstitution()
+    );
+    var ciBundles = bundle.getCiBundleList() != null
+      ? bundle.getCiBundleList()
+      : new ArrayList<CiBundle>();
 
     // analyze public and private bundles
     for (CiBundle cibundle : ciBundles) {
       if (cibundle.getAttributes() != null && !cibundle.getAttributes().isEmpty()) {
         transfers.addAll(
-            cibundle.getAttributes().parallelStream()
-                .filter(
-                    attribute ->
-                        (attribute.getTransferCategory() != null
-                            && (TransferCategoryRelation.NOT_EQUAL.equals(
-                                    attribute.getTransferCategoryRelation())
-                                && primaryTransferCategoryList.contains(
-                                    attribute.getTransferCategory()))))
-                .map(attribute -> createTransfer(bundle.getPaymentAmount(), 0, bundle, null))
-                .collect(Collectors.toList()));
+          cibundle
+            .getAttributes()
+            .parallelStream()
+            .filter(attribute ->
+              (
+                attribute.getTransferCategory() != null &&
+                (
+                  TransferCategoryRelation.NOT_EQUAL.equals(
+                    attribute.getTransferCategoryRelation()
+                  ) &&
+                  primaryTransferCategoryList.contains(attribute.getTransferCategory())
+                )
+              )
+            )
+            .map(attribute -> createTransfer(bundle.getPaymentAmount(), 0, bundle, null))
+            .collect(Collectors.toList())
+        );
         transfers.addAll(
-            cibundle.getAttributes().parallelStream()
-                .filter(
-                    attribute ->
-                        (attribute.getTransferCategory() == null
-                            || (TransferCategoryRelation.EQUAL.equals(
-                                        attribute.getTransferCategoryRelation())
-                                    && primaryTransferCategoryList.contains(
-                                        attribute.getTransferCategory())
-                                || (TransferCategoryRelation.NOT_EQUAL.equals(
-                                        attribute.getTransferCategoryRelation())
-                                    && !primaryTransferCategoryList.contains(
-                                        attribute.getTransferCategory())))))
-                .map(
-                    attribute -> {
-                      // primaryCiIncurredFee = min (paymentAmount, min(ciIncurredFee, PspFee))
-                      // The second min is to prevent error in order to check that PSP payment
-                      // amount
-                      // should be always greater than CI one.
-                      // Note: this check should be done on Marketplace.
-                      long primaryCiIncurredFee =
-                          Math.min(
-                              paymentOption.getPaymentAmount(),
-                              Math.min(bundle.getPaymentAmount(), attribute.getMaxPaymentAmount()));
-                      return createTransfer(
-                          Math.max(0, bundle.getPaymentAmount() - primaryCiIncurredFee),
-                          primaryCiIncurredFee,
-                          bundle,
-                          cibundle.getId());
-                    })
-                .collect(Collectors.toList()));
+          cibundle
+            .getAttributes()
+            .parallelStream()
+            .filter(attribute ->
+              (
+                attribute.getTransferCategory() == null ||
+                (
+                  TransferCategoryRelation.EQUAL.equals(attribute.getTransferCategoryRelation()) &&
+                  primaryTransferCategoryList.contains(attribute.getTransferCategory()) ||
+                  (
+                    TransferCategoryRelation.NOT_EQUAL.equals(
+                      attribute.getTransferCategoryRelation()
+                    ) &&
+                    !primaryTransferCategoryList.contains(attribute.getTransferCategory())
+                  )
+                )
+              )
+            )
+            .map(attribute -> {
+              // primaryCiIncurredFee = min (paymentAmount, min(ciIncurredFee, PspFee))
+              // The second min is to prevent error in order to check that PSP payment
+              // amount
+              // should be always greater than CI one.
+              // Note: this check should be done on Marketplace.
+              long primaryCiIncurredFee = Math.min(
+                paymentOption.getPaymentAmount(),
+                Math.min(bundle.getPaymentAmount(), attribute.getMaxPaymentAmount())
+              );
+              return createTransfer(
+                Math.max(0, bundle.getPaymentAmount() - primaryCiIncurredFee),
+                primaryCiIncurredFee,
+                bundle,
+                cibundle.getId()
+              );
+            })
+            .collect(Collectors.toList())
+        );
       } else {
         transfers.add(createTransfer(bundle.getPaymentAmount(), 0, bundle, cibundle.getId()));
       }
@@ -140,21 +165,27 @@ public class CalculatorService {
    * @return Create transfer item
    */
   private Transfer createTransfer(
-      long taxPayerFee, long primaryCiIncurredFee, ValidBundle bundle, String idCiBundle) {
-    return Transfer.builder()
-        .taxPayerFee(taxPayerFee)
-        .primaryCiIncurredFee(primaryCiIncurredFee)
-        .paymentMethod(
-            bundle.getPaymentMethod() == null ? PaymentMethod.ANY : bundle.getPaymentMethod())
-        .touchpoint(bundle.getTouchpoint())
-        .idBundle(bundle.getId())
-        .bundleName(bundle.getName())
-        .bundleDescription(bundle.getDescription())
-        .idCiBundle(idCiBundle)
-        .idPsp(bundle.getIdPsp())
-        .idBrokerPsp(bundle.getIdBrokerPsp())
-        .idChannel(bundle.getIdChannel())
-        .onUs(PaymentMethod.CP.equals(bundle.getPaymentMethod()) ? bundle.getOnUs() : null)
-        .build();
+    long taxPayerFee,
+    long primaryCiIncurredFee,
+    ValidBundle bundle,
+    String idCiBundle
+  ) {
+    return Transfer
+      .builder()
+      .taxPayerFee(taxPayerFee)
+      .primaryCiIncurredFee(primaryCiIncurredFee)
+      .paymentMethod(
+        bundle.getPaymentMethod() == null ? PaymentMethod.ANY : bundle.getPaymentMethod()
+      )
+      .touchpoint(bundle.getTouchpoint())
+      .idBundle(bundle.getId())
+      .bundleName(bundle.getName())
+      .bundleDescription(bundle.getDescription())
+      .idCiBundle(idCiBundle)
+      .idPsp(bundle.getIdPsp())
+      .idBrokerPsp(bundle.getIdBrokerPsp())
+      .idChannel(bundle.getIdChannel())
+      .onUs(PaymentMethod.CP.equals(bundle.getPaymentMethod()) ? bundle.getOnUs() : null)
+      .build();
   }
 }

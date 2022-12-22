@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConfigurationService {
 
-  @Autowired ValidBundleRepository validBundleRepository;
+  @Autowired
+  ValidBundleRepository validBundleRepository;
 
-  @Autowired TouchpointRepository touchpointRepository;
+  @Autowired
+  TouchpointRepository touchpointRepository;
 
   public void addValidBundles(List<ValidBundle> validBundles) {
     validBundleRepository.saveAll(validBundles);
@@ -25,10 +27,10 @@ public class ConfigurationService {
   }
 
   public void addTouchpoints(List<Touchpoint> touchpoints) {
-    var filtered =
-        touchpoints.stream()
-            .filter(elem -> touchpointRepository.findByName(elem.getName()).isEmpty())
-            .collect(Collectors.toList());
+    var filtered = touchpoints
+      .stream()
+      .filter(elem -> touchpointRepository.findByName(elem.getName()).isEmpty())
+      .collect(Collectors.toList());
     touchpointRepository.saveAll(filtered);
   }
 

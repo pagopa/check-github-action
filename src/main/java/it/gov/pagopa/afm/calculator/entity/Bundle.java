@@ -27,9 +27,11 @@ import lombok.experimental.SuperBuilder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Bundle {
 
-  @Id private String id;
+  @Id
+  private String id;
 
-  @PartitionKey private String idPsp;
+  @PartitionKey
+  private String idPsp;
 
   private String name;
   private String description;
@@ -52,10 +54,12 @@ public class Bundle {
 
   private String idBrokerPsp;
 
-  @NotNull private Boolean digitalStamp;
+  @NotNull
+  private Boolean digitalStamp;
 
   // true if bundle must be used only for digital stamp
-  @NotNull private Boolean digitalStampRestriction;
+  @NotNull
+  private Boolean digitalStampRestriction;
 
   // useful only if paymentMethod = CP
   private Boolean onUs;

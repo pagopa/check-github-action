@@ -34,7 +34,7 @@ public class RequestFilter implements Filter {
    */
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
+    throws IOException, ServletException {
     try {
       HttpServletRequest httRequest = (HttpServletRequest) request;
 

@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Configuration", description = "Utility Services")
 public class ConfigurationController {
 
-  @Autowired private ConfigurationService configurationService;
+  @Autowired
+  private ConfigurationService configurationService;
 
   @PostMapping("/bundles/add")
   public ResponseEntity<Void> addValidBundles(@RequestBody List<ValidBundle> validBundles) {

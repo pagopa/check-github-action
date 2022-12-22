@@ -17,13 +17,17 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @SpringBootTest
 class ErrorHandlerTest {
 
-  @Autowired private ErrorHandler errorHandler;
+  @Autowired
+  private ErrorHandler errorHandler;
 
   @Test
   void handleAppException() {
-    AppException appException =
-        new AppException(
-            HttpStatus.BAD_REQUEST, "some error", "details", new NullPointerException());
+    AppException appException = new AppException(
+      HttpStatus.BAD_REQUEST,
+      "some error",
+      "details",
+      new NullPointerException()
+    );
     ResponseEntity<ProblemJson> actual = errorHandler.handleAppException(appException, null);
     assertEquals(appException.getHttpStatus(), actual.getStatusCode());
     assertNotNull(actual.getBody());
@@ -34,8 +38,12 @@ class ErrorHandlerTest {
 
   @Test
   void handleAppException2() {
-    AppException appException =
-        new AppException(HttpStatus.BAD_REQUEST, "some error", "details", null);
+    AppException appException = new AppException(
+      HttpStatus.BAD_REQUEST,
+      "some error",
+      "details",
+      null
+    );
     ResponseEntity<ProblemJson> actual = errorHandler.handleAppException(appException, null);
     assertEquals(appException.getHttpStatus(), actual.getStatusCode());
     assertNotNull(actual.getBody());
@@ -46,8 +54,10 @@ class ErrorHandlerTest {
 
   @Test
   void handleGenericException() {
-    ResponseEntity<ProblemJson> actual =
-        errorHandler.handleGenericException(new NullPointerException("message"), null);
+    ResponseEntity<ProblemJson> actual = errorHandler.handleGenericException(
+      new NullPointerException("message"),
+      null
+    );
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actual.getStatusCode());
     assertNotNull(actual.getBody());
     assertEquals("INTERNAL SERVER ERROR", actual.getBody().getTitle());
@@ -57,29 +67,38 @@ class ErrorHandlerTest {
 
   @Test
   void handleMissingServletRequestParameter() {
-    ResponseEntity<Object> actual =
-        errorHandler.handleMissingServletRequestParameter(
-            new MissingServletRequestParameterException("param", "String"), null, null, null);
+    ResponseEntity<Object> actual = errorHandler.handleMissingServletRequestParameter(
+      new MissingServletRequestParameterException("param", "String"),
+      null,
+      null,
+      null
+    );
     assertNotNull(actual.getBody());
     ProblemJson body = (ProblemJson) actual.getBody();
     assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
     assertEquals("BAD REQUEST", body.getTitle());
     assertEquals(
-        "Required request parameter 'param' for method parameter type String is not present",
-        body.getDetail());
+      "Required request parameter 'param' for method parameter type String is not present",
+      body.getDetail()
+    );
     assertEquals(HttpStatus.BAD_REQUEST.value(), body.getStatus());
   }
 
   @Test
   void handleTypeMismatch() {
     MethodParameter methodParameter = Mockito.mock(MethodParameter.class);
-    ResponseEntity<Object> actual =
-        errorHandler.handleTypeMismatch(
-            new MethodArgumentTypeMismatchException(
-                "2", String.class, "age", methodParameter, new IllegalArgumentException("")),
-            null,
-            null,
-            null);
+    ResponseEntity<Object> actual = errorHandler.handleTypeMismatch(
+      new MethodArgumentTypeMismatchException(
+        "2",
+        String.class,
+        "age",
+        methodParameter,
+        new IllegalArgumentException("")
+      ),
+      null,
+      null,
+      null
+    );
     assertNotNull(actual.getBody());
     ProblemJson body = (ProblemJson) actual.getBody();
     assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());

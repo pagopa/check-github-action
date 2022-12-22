@@ -30,11 +30,14 @@ public class UtilityComponent {
    * @return Check if creditor institution belongs to transfer list
    */
   public static boolean inTransferList(
-      String creditorInstitutionFiscalCode, List<TransferListItem> transferList) {
-    return transferList.parallelStream()
-        .anyMatch(
-            transferListItem ->
-                transferListItem.getCreditorInstitution().equals(creditorInstitutionFiscalCode));
+    String creditorInstitutionFiscalCode,
+    List<TransferListItem> transferList
+  ) {
+    return transferList
+      .parallelStream()
+      .anyMatch(transferListItem ->
+        transferListItem.getCreditorInstitution().equals(creditorInstitutionFiscalCode)
+      );
   }
 
   /**
@@ -48,11 +51,13 @@ public class UtilityComponent {
   public List<String> getTransferCategoryList(PaymentOption paymentOption) {
     log.debug("getTransferCategoryList");
     return paymentOption.getTransferList() != null
-        ? paymentOption.getTransferList().parallelStream()
-            .map(TransferListItem::getTransferCategory)
-            .distinct()
-            .collect(Collectors.toList())
-        : null;
+      ? paymentOption
+        .getTransferList()
+        .parallelStream()
+        .map(TransferListItem::getTransferCategory)
+        .distinct()
+        .collect(Collectors.toList())
+      : null;
   }
 
   /**
@@ -65,14 +70,18 @@ public class UtilityComponent {
    */
   @Cacheable(value = "getPrimaryTransferCategoryList")
   public List<String> getPrimaryTransferCategoryList(
-      PaymentOption paymentOption, String primaryCreditorInstitution) {
+    PaymentOption paymentOption,
+    String primaryCreditorInstitution
+  ) {
     log.debug("getPrimaryTransferCategoryList {} ", primaryCreditorInstitution);
     return paymentOption.getTransferList() != null
-        ? paymentOption.getTransferList().parallelStream()
-            .filter(elem -> primaryCreditorInstitution.equals(elem.getCreditorInstitution()))
-            .map(TransferListItem::getTransferCategory)
-            .distinct()
-            .collect(Collectors.toList())
-        : new ArrayList<>();
+      ? paymentOption
+        .getTransferList()
+        .parallelStream()
+        .filter(elem -> primaryCreditorInstitution.equals(elem.getCreditorInstitution()))
+        .map(TransferListItem::getTransferCategory)
+        .distinct()
+        .collect(Collectors.toList())
+      : new ArrayList<>();
   }
 }

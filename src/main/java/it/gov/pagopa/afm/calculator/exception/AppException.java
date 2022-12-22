@@ -30,10 +30,11 @@ public class AppException extends RuntimeException {
    * @param cause The cause of this {@link AppException}
    */
   public AppException(
-      @NotNull HttpStatus httpStatus,
-      @NotNull String title,
-      @NotNull String message,
-      Throwable cause) {
+    @NotNull HttpStatus httpStatus,
+    @NotNull String title,
+    @NotNull String message,
+    Throwable cause
+  ) {
     super(message, cause);
     this.title = title;
     this.httpStatus = httpStatus;
@@ -45,7 +46,10 @@ public class AppException extends RuntimeException {
    * @param message the detail message returend to the response
    */
   public AppException(
-      @NotNull HttpStatus httpStatus, @NotNull String title, @NotNull String message) {
+    @NotNull HttpStatus httpStatus,
+    @NotNull String title,
+    @NotNull String message
+  ) {
     super(message);
     this.title = title;
     this.httpStatus = httpStatus;

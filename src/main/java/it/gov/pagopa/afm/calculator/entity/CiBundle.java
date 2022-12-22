@@ -23,9 +23,13 @@ import org.springframework.data.annotation.Id;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CiBundle {
 
-  @Id @NotBlank private String id;
+  @Id
+  @NotBlank
+  private String id;
 
-  @NotBlank private String ciFiscalCode;
+  @NotBlank
+  private String ciFiscalCode;
 
-  @Valid private List<CiBundleAttribute> attributes;
+  @Valid
+  private List<CiBundleAttribute> attributes;
 }
