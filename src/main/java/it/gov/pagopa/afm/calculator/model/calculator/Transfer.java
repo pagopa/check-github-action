@@ -9,6 +9,7 @@ import lombok.ToString;
 @Data
 @ToString
 public class Transfer implements Comparable<Transfer> {
+
     private Long taxPayerFee;
     private long primaryCiIncurredFee;
     private PaymentMethod paymentMethod;
@@ -22,10 +23,8 @@ public class Transfer implements Comparable<Transfer> {
     private String idBrokerPsp;
     private Boolean onUs;
 
-
     @Override
     public int compareTo(Transfer t) {
         return this.getTaxPayerFee().compareTo(t.getTaxPayerFee());
     }
 }
-

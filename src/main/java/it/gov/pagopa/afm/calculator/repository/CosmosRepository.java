@@ -1,5 +1,13 @@
 package src.main.java.it.gov.pagopa.afm.calculator.repository;
 
+import static it.gov.pagopa.afm.calculator.service.UtilityComponent.isGlobal;
+import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.and;
+import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.arrayContains;
+import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.in;
+import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.isEqualOrAny;
+import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.isNull;
+import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.or;
+
 import com.azure.cosmos.implementation.guava25.collect.Iterables;
 import com.azure.spring.data.cosmos.core.CosmosTemplate;
 import com.azure.spring.data.cosmos.core.query.CosmosQuery;
@@ -10,23 +18,14 @@ import it.gov.pagopa.afm.calculator.exception.AppException;
 import it.gov.pagopa.afm.calculator.model.PaymentOption;
 import it.gov.pagopa.afm.calculator.service.UtilityComponent;
 import it.gov.pagopa.afm.calculator.util.CriteriaBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import static it.gov.pagopa.afm.calculator.service.UtilityComponent.isGlobal;
-import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.and;
-import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.arrayContains;
-import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.in;
-import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.isEqualOrAny;
-import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.isNull;
-import static it.gov.pagopa.afm.calculator.util.CriteriaBuilder.or;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class CosmosRepository {
@@ -43,10 +42,13 @@ public class CosmosRepository {
      * @return a list of CI-Bundle filtered by fiscal Code
      */
     private static List<CiBundle> filterByCI(String ciFiscalCode, ValidBundle bundle) {
-        return bundle.getCiBundleList() != null ? bundle.getCiBundleList().parallelStream()
+        return bundle.getCiBundleList() != null
+            ? bundle
+                .getCiBundleList()
+                .parallelStream()
                 .filter(ciBundle -> ciFiscalCode.equals(ciBundle.getCiFiscalCode()))
                 .collect(Collectors.toList())
-                : null;
+            : null;
     }
 
     @Cacheable(value = "findValidBundles")
@@ -63,7 +65,6 @@ public class CosmosRepository {
      * @return the filtered bundles
      */
     private Iterable<ValidBundle> findValidBundles(PaymentOption paymentOption) {
-
         // add filter by Payment Amount: minPaymentAmount <= paymentAmount < maxPaymentAmount
         var minFilter = CriteriaBuilder.lessThanEqual("minPaymentAmount", paymentOption.getPaymentAmount());
         var maxFilter = CriteriaBuilder.greaterThan("maxPaymentAmount", paymentOption.getPaymentAmount());
@@ -72,12 +73,18 @@ public class CosmosRepository {
         // add filter by Touch Point: touchpoint=<value> || touchpoint==null
         if (paymentOption.getTouchpoint() != null) {
             var touchpointNameFilter = isEqualOrAny("name", paymentOption.getTouchpoint());
-            Iterable<Touchpoint> touchpoint = cosmosTemplate.find(new CosmosQuery(touchpointNameFilter),
-                    Touchpoint.class, "touchpoints");
+            Iterable<Touchpoint> touchpoint = cosmosTemplate.find(
+                new CosmosQuery(touchpointNameFilter),
+                Touchpoint.class,
+                "touchpoints"
+            );
 
             if (Iterables.size(touchpoint) == 0) {
-                throw new AppException(HttpStatus.NOT_FOUND,
-                        "Touchpoint not found", "Cannot find touchpont with name: '" + paymentOption.getTouchpoint() + "'");
+                throw new AppException(
+                    HttpStatus.NOT_FOUND,
+                    "Touchpoint not found",
+                    "Cannot find touchpont with name: '" + paymentOption.getTouchpoint() + "'"
+                );
             }
 
             var touchpointFilter = isEqualOrAny("touchpoint", touchpoint.iterator().next().getName());
@@ -99,11 +106,12 @@ public class CosmosRepository {
         // add filter by Transfer Category: transferCategory[] contains one of paymentOption
         List<String> categoryList = utilityComponent.getTransferCategoryList(paymentOption);
         if (categoryList != null) {
-            var taxonomyFilter = categoryList.parallelStream()
-                    .filter(Objects::nonNull)
-                    .filter(elem -> !elem.isEmpty())
-                    .map(elem -> arrayContains("transferCategoryList", elem))
-                    .reduce(CriteriaBuilder::or);
+            var taxonomyFilter = categoryList
+                .parallelStream()
+                .filter(Objects::nonNull)
+                .filter(elem -> !elem.isEmpty())
+                .map(elem -> arrayContains("transferCategoryList", elem))
+                .reduce(CriteriaBuilder::or);
 
             if (taxonomyFilter.isPresent()) {
                 var taxonomyOrNull = or(taxonomyFilter.get(), isNull("transferCategoryList"));
@@ -123,17 +131,20 @@ public class CosmosRepository {
      * @return the GLOBAL bundles and PRIVATE|PUBLIC bundles of the CI
      */
     private List<ValidBundle> getFilteredBundles(PaymentOption paymentOption, Iterable<ValidBundle> validBundles) {
-        var onlyMarcaBolloDigitale = paymentOption.getTransferList().stream()
-                .filter(Objects::nonNull)
-                .filter(elem -> Boolean.TRUE.equals(elem.getDigitalStamp()))
-                .count();
+        var onlyMarcaBolloDigitale = paymentOption
+            .getTransferList()
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(elem -> Boolean.TRUE.equals(elem.getDigitalStamp()))
+            .count();
         var transferListSize = paymentOption.getTransferList().size();
 
-            return StreamSupport.stream(validBundles.spliterator(), true)
-                .filter(bundle -> digitalStampFilter(transferListSize, onlyMarcaBolloDigitale, bundle))
-                // Gets the GLOBAL bundles and PRIVATE|PUBLIC bundles of the CI
-                .filter(bundle -> globalAndRelatedFilter(paymentOption, bundle))
-                .collect(Collectors.toList());
+        return StreamSupport
+            .stream(validBundles.spliterator(), true)
+            .filter(bundle -> digitalStampFilter(transferListSize, onlyMarcaBolloDigitale, bundle))
+            // Gets the GLOBAL bundles and PRIVATE|PUBLIC bundles of the CI
+            .filter(bundle -> globalAndRelatedFilter(paymentOption, bundle))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -173,7 +184,6 @@ public class CosmosRepository {
      * @return True if the bundle is related with the CI
      */
     private static boolean belongsCI(ValidBundle bundle) {
-        return bundle != null && bundle.getCiBundleList() != null && !bundle.getCiBundleList().isEmpty();
+        return (bundle != null && bundle.getCiBundleList() != null && !bundle.getCiBundleList().isEmpty());
     }
-
 }

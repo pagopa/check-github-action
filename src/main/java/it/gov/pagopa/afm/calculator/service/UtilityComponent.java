@@ -4,13 +4,12 @@ import it.gov.pagopa.afm.calculator.entity.ValidBundle;
 import it.gov.pagopa.afm.calculator.model.BundleType;
 import it.gov.pagopa.afm.calculator.model.PaymentOption;
 import it.gov.pagopa.afm.calculator.model.TransferListItem;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link Cacheable} methods are ignored when called from within the same class
@@ -33,9 +32,11 @@ public class UtilityComponent {
      * @return Check if creditor institution belongs to transfer list
      */
     public static boolean inTransferList(String creditorInstitutionFiscalCode, List<TransferListItem> transferList) {
-        return transferList.parallelStream()
-                .anyMatch(transferListItem -> transferListItem.getCreditorInstitution()
-                        .equals(creditorInstitutionFiscalCode));
+        return transferList
+            .parallelStream()
+            .anyMatch(transferListItem ->
+                transferListItem.getCreditorInstitution().equals(creditorInstitutionFiscalCode)
+            );
     }
 
     /**
@@ -47,13 +48,14 @@ public class UtilityComponent {
     @Cacheable(value = "getTransferCategoryList")
     public List<String> getTransferCategoryList(PaymentOption paymentOption) {
         log.debug("getTransferCategoryList");
-        return paymentOption.getTransferList() != null ?
-                paymentOption.getTransferList()
-                        .parallelStream()
-                        .map(TransferListItem::getTransferCategory)
-                        .distinct()
-                        .collect(Collectors.toList())
-                : null;
+        return paymentOption.getTransferList() != null
+            ? paymentOption
+                .getTransferList()
+                .parallelStream()
+                .map(TransferListItem::getTransferCategory)
+                .distinct()
+                .collect(Collectors.toList())
+            : null;
     }
 
     /**
@@ -66,14 +68,14 @@ public class UtilityComponent {
     @Cacheable(value = "getPrimaryTransferCategoryList")
     public List<String> getPrimaryTransferCategoryList(PaymentOption paymentOption, String primaryCreditorInstitution) {
         log.debug("getPrimaryTransferCategoryList {} ", primaryCreditorInstitution);
-        return paymentOption.getTransferList() != null ?
-                paymentOption.getTransferList()
-                        .parallelStream()
-                        .filter(elem -> primaryCreditorInstitution.equals(elem.getCreditorInstitution()))
-                        .map(TransferListItem::getTransferCategory)
-                        .distinct()
-                        .collect(Collectors.toList())
-                : new ArrayList<>();
+        return paymentOption.getTransferList() != null
+            ? paymentOption
+                .getTransferList()
+                .parallelStream()
+                .filter(elem -> primaryCreditorInstitution.equals(elem.getCreditorInstitution()))
+                .map(TransferListItem::getTransferCategory)
+                .distinct()
+                .collect(Collectors.toList())
+            : new ArrayList<>();
     }
-
 }

@@ -22,10 +22,10 @@ public class MockitoConfig {
     public ValidBundleRepository validBundleRepository() {
         return Mockito.mock(ValidBundleRepository.class);
     }
+
     @Bean
     @Primary
     public TouchpointRepository touchpointRepository() {
         return Mockito.mock(TouchpointRepository.class);
     }
-
 }

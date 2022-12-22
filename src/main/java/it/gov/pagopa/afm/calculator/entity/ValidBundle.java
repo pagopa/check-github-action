@@ -1,14 +1,13 @@
 package src.main.java.it.gov.pagopa.afm.calculator.entity;
 
 import com.azure.spring.data.cosmos.core.mapping.Container;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @Getter
 @Setter

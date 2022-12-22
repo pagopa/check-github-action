@@ -1,6 +1,5 @@
 package src.test.java.it.gov.pagopa.afm.calculator;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.afm.calculator.entity.CiBundle;
@@ -10,8 +9,6 @@ import it.gov.pagopa.afm.calculator.entity.ValidBundle;
 import it.gov.pagopa.afm.calculator.model.BundleType;
 import it.gov.pagopa.afm.calculator.model.PaymentMethod;
 import it.gov.pagopa.afm.calculator.model.TransferCategoryRelation;
-import lombok.experimental.UtilityClass;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class TestUtil {
@@ -65,62 +63,61 @@ public class TestUtil {
     }
 
     public static ValidBundle getMockGlobalValidBundle() {
-        return ValidBundle.builder()
-                .id("2")
-                .name("bundle2")
-                .idPsp("123")
-                .paymentAmount(2L)
-                .minPaymentAmount(0L)
-                .maxPaymentAmount(1000L)
-                .type(BundleType.GLOBAL)
-                .touchpoint("1")
-                .paymentMethod(PaymentMethod.CP)
-                .onUs(true)
-                .build();
+        return ValidBundle
+            .builder()
+            .id("2")
+            .name("bundle2")
+            .idPsp("123")
+            .paymentAmount(2L)
+            .minPaymentAmount(0L)
+            .maxPaymentAmount(1000L)
+            .type(BundleType.GLOBAL)
+            .touchpoint("1")
+            .paymentMethod(PaymentMethod.CP)
+            .onUs(true)
+            .build();
     }
 
     public static ValidBundle getMockValidBundle() {
-        return ValidBundle.builder()
-                .id("1")
-                .name("bundle1")
-                .idPsp("ABC")
-                .paymentAmount(1L)
-                .minPaymentAmount(0L)
-                .maxPaymentAmount(1000L)
-                .type(BundleType.PUBLIC)
-                .touchpoint("1")
-                .paymentMethod(PaymentMethod.CP)
-                .transferCategoryList(List.of("TAX1"))
-                .ciBundleList(Collections.singletonList(getMockCiBundle()))
-                .digitalStamp(false)
-                .digitalStampRestriction(false)
-                .onUs(true)
-                .build();
+        return ValidBundle
+            .builder()
+            .id("1")
+            .name("bundle1")
+            .idPsp("ABC")
+            .paymentAmount(1L)
+            .minPaymentAmount(0L)
+            .maxPaymentAmount(1000L)
+            .type(BundleType.PUBLIC)
+            .touchpoint("1")
+            .paymentMethod(PaymentMethod.CP)
+            .transferCategoryList(List.of("TAX1"))
+            .ciBundleList(Collections.singletonList(getMockCiBundle()))
+            .digitalStamp(false)
+            .digitalStampRestriction(false)
+            .onUs(true)
+            .build();
     }
 
     public static Touchpoint getMockTouchpoints() {
-        return Touchpoint.builder()
-                .id("1")
-                .name("CHECKOUT")
-                .creationDate(LocalDateTime.now())
-                .build();
+        return Touchpoint.builder().id("1").name("CHECKOUT").creationDate(LocalDateTime.now()).build();
     }
 
     private static CiBundle getMockCiBundle() {
-        return CiBundle.builder()
-                .id("1")
-                .ciFiscalCode("77777777777")
-                .attributes(List.of(getMockCiBundleAttribute()))
-                .build();
+        return CiBundle
+            .builder()
+            .id("1")
+            .ciFiscalCode("77777777777")
+            .attributes(List.of(getMockCiBundleAttribute()))
+            .build();
     }
 
     private static CiBundleAttribute getMockCiBundleAttribute() {
-        return CiBundleAttribute.builder()
-                .id("1")
-                .maxPaymentAmount(10L)
-                .transferCategory("TAX1")
-                .transferCategoryRelation(TransferCategoryRelation.EQUAL)
-                .build();
+        return CiBundleAttribute
+            .builder()
+            .id("1")
+            .maxPaymentAmount(10L)
+            .transferCategory("TAX1")
+            .transferCategoryRelation(TransferCategoryRelation.EQUAL)
+            .build();
     }
-
 }

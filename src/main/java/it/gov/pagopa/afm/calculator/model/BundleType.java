@@ -13,5 +13,4 @@ public enum BundleType {
     BundleType(final String bundleType) {
         this.value = bundleType;
     }
-
 }

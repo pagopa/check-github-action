@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.gov.pagopa.afm.calculator.entity.Touchpoint;
 import it.gov.pagopa.afm.calculator.entity.ValidBundle;
 import it.gov.pagopa.afm.calculator.service.ConfigurationService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-@RestController()
+@RestController
 @RequestMapping(path = "/configuration")
 @Tag(name = "Configuration", description = "Utility Services")
 public class ConfigurationController {
@@ -45,5 +44,4 @@ public class ConfigurationController {
         configurationService.deleteTouchpoints(touchpoints);
         return ResponseEntity.ok().build();
     }
-
 }

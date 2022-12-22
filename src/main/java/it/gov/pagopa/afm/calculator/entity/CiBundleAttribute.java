@@ -1,15 +1,14 @@
 package src.main.java.it.gov.pagopa.afm.calculator.entity;
 
 import it.gov.pagopa.afm.calculator.model.TransferCategoryRelation;
+import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -28,5 +27,4 @@ public class CiBundleAttribute {
     private String transferCategory;
 
     private TransferCategoryRelation transferCategoryRelation;
-
 }

@@ -4,11 +4,10 @@ import it.gov.pagopa.afm.calculator.entity.Touchpoint;
 import it.gov.pagopa.afm.calculator.entity.ValidBundle;
 import it.gov.pagopa.afm.calculator.repository.TouchpointRepository;
 import it.gov.pagopa.afm.calculator.repository.ValidBundleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ConfigurationService {
@@ -28,9 +27,10 @@ public class ConfigurationService {
     }
 
     public void addTouchpoints(List<Touchpoint> touchpoints) {
-        var filtered = touchpoints.stream()
-                .filter(elem -> touchpointRepository.findByName(elem.getName()).isEmpty())
-                .collect(Collectors.toList());
+        var filtered = touchpoints
+            .stream()
+            .filter(elem -> touchpointRepository.findByName(elem.getName()).isEmpty())
+            .collect(Collectors.toList());
         touchpointRepository.saveAll(filtered);
     }
 

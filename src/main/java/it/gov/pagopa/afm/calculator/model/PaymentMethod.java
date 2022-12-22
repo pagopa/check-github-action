@@ -20,5 +20,4 @@ public enum PaymentMethod {
     PaymentMethod(final String paymentMethod) {
         this.value = paymentMethod;
     }
-
 }

@@ -1,5 +1,8 @@
 package src.main.java.it.gov.pagopa.afm.calculator.config;
 
+import java.util.Arrays;
+import java.util.stream.StreamSupport;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -16,10 +19,6 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.stream.StreamSupport;
 
 @Aspect
 @Component
@@ -68,13 +67,21 @@ public class LoggingAspect {
         final Environment env = event.getApplicationContext().getEnvironment();
         log.debug("Active profiles: {}", Arrays.toString(env.getActiveProfiles()));
         final MutablePropertySources sources = ((AbstractEnvironment) env).getPropertySources();
-        StreamSupport.stream(sources.spliterator(), false)
-                .filter(EnumerablePropertySource.class::isInstance)
-                .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
-                .flatMap(Arrays::stream)
-                .distinct()
-                .filter(prop -> !(prop.toLowerCase().contains("credentials") || prop.toLowerCase().contains("password") || prop.toLowerCase().contains("pass") || prop.toLowerCase().contains("pwd")))
-                .forEach(prop -> log.debug("{}: {}", prop, env.getProperty(prop)));
+        StreamSupport
+            .stream(sources.spliterator(), false)
+            .filter(EnumerablePropertySource.class::isInstance)
+            .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
+            .flatMap(Arrays::stream)
+            .distinct()
+            .filter(prop ->
+                !(
+                    prop.toLowerCase().contains("credentials") ||
+                    prop.toLowerCase().contains("password") ||
+                    prop.toLowerCase().contains("pass") ||
+                    prop.toLowerCase().contains("pwd")
+                )
+            )
+            .forEach(prop -> log.debug("{}: {}", prop, env.getProperty(prop)));
     }
 
     @Before(value = "restController()")
@@ -87,7 +94,10 @@ public class LoggingAspect {
         log.info("Successful API operation {} - result: {}", joinPoint.getSignature().getName(), result);
     }
 
-    @AfterReturning(value = "execution(* it.gov.pagopa.afm.calculator.exception.ErrorHandler.*(..))", returning = "result")
+    @AfterReturning(
+        value = "execution(* it.gov.pagopa.afm.calculator.exception.ErrorHandler.*(..))",
+        returning = "result"
+    )
     public void trowingApiInvocation(JoinPoint joinPoint, Object result) {
         log.info("Failed API operation {} - error: {}", joinPoint.getSignature().getName(), result);
     }
@@ -97,7 +107,11 @@ public class LoggingAspect {
         long startTime = System.currentTimeMillis();
         Object result = joinPoint.proceed();
         long endTime = System.currentTimeMillis();
-        log.trace("Time taken for Execution of {} is: {}ms", joinPoint.getSignature().toShortString(), (endTime - startTime));
+        log.trace(
+            "Time taken for Execution of {} is: {}ms",
+            joinPoint.getSignature().toShortString(),
+            (endTime - startTime)
+        );
         return result;
     }
 

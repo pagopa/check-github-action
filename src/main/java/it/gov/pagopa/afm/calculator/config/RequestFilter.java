@@ -1,11 +1,7 @@
 package src.main.java.it.gov.pagopa.afm.calculator.config;
 
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
+import java.io.IOException;
+import java.util.UUID;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -13,8 +9,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -35,7 +34,8 @@ public class RequestFilter implements Filter {
      * @throws ServletException if the processing fails for any other reason
      */
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
         try {
             HttpServletRequest httRequest = (HttpServletRequest) request;
 
@@ -56,5 +56,4 @@ public class RequestFilter implements Filter {
             MDC.clear();
         }
     }
-
 }

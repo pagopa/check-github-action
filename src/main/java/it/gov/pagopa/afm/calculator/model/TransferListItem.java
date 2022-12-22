@@ -10,6 +10,7 @@ import lombok.ToString;
 @Data
 @ToString
 public class TransferListItem {
+
     private String creditorInstitution;
     private String transferCategory;
     private Boolean digitalStamp;

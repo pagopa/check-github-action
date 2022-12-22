@@ -12,5 +12,4 @@ public enum TransferCategoryRelation {
     TransferCategoryRelation(final String transferCategoryRelation) {
         this.value = transferCategoryRelation;
     }
-
 }
