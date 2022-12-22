@@ -17,6 +17,5 @@ import lombok.experimental.SuperBuilder;
 @Container(containerName = "validbundles")
 public class ValidBundle extends Bundle {
 
-  @Valid
-  private List<CiBundle> ciBundleList;
+  @Valid private List<CiBundle> ciBundleList;
 }

@@ -18,9 +18,7 @@ import lombok.ToString;
 @Builder(toBuilder = true)
 public class CiBundleAttribute {
 
-  @Id
-  @NotNull
-  private String id;
+  @Id @NotNull private String id;
 
   private Long maxPaymentAmount;
 

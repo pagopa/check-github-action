@@ -17,18 +17,13 @@ import lombok.ToString;
 @ToString
 public class PaymentOption {
 
-  @NotNull
-  private Long paymentAmount;
+  @NotNull private Long paymentAmount;
 
-  @NotNull
-  private String primaryCreditorInstitution;
+  @NotNull private String primaryCreditorInstitution;
 
   private PaymentMethod paymentMethod;
   private String touchpoint;
   private List<String> idPspList;
 
-  @Valid
-  @NotNull
-  @NotEmpty
-  private List<TransferListItem> transferList;
+  @Valid @NotNull @NotEmpty private List<TransferListItem> transferList;
 }

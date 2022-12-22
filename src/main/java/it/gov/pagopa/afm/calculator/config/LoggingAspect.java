@@ -65,45 +65,37 @@ public class LoggingAspect {
     final Environment env = event.getApplicationContext().getEnvironment();
     log.debug("Active profiles: {}", Arrays.toString(env.getActiveProfiles()));
     final MutablePropertySources sources = ((AbstractEnvironment) env).getPropertySources();
-    StreamSupport
-      .stream(sources.spliterator(), false)
-      .filter(EnumerablePropertySource.class::isInstance)
-      .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
-      .flatMap(Arrays::stream)
-      .distinct()
-      .filter(prop ->
-        !(
-          prop.toLowerCase().contains("credentials") ||
-          prop.toLowerCase().contains("password") ||
-          prop.toLowerCase().contains("pass") ||
-          prop.toLowerCase().contains("pwd")
-        )
-      )
-      .forEach(prop -> log.debug("{}: {}", prop, env.getProperty(prop)));
+    StreamSupport.stream(sources.spliterator(), false)
+        .filter(EnumerablePropertySource.class::isInstance)
+        .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
+        .flatMap(Arrays::stream)
+        .distinct()
+        .filter(
+            prop ->
+                !(prop.toLowerCase().contains("credentials")
+                    || prop.toLowerCase().contains("password")
+                    || prop.toLowerCase().contains("pass")
+                    || prop.toLowerCase().contains("pwd")))
+        .forEach(prop -> log.debug("{}: {}", prop, env.getProperty(prop)));
   }
 
   @Before(value = "restController()")
   public void logApiInvocation(JoinPoint joinPoint) {
     log.info(
-      "Invoking API operation {} - args: {}",
-      joinPoint.getSignature().getName(),
-      joinPoint.getArgs()
-    );
+        "Invoking API operation {} - args: {}",
+        joinPoint.getSignature().getName(),
+        joinPoint.getArgs());
   }
 
   @AfterReturning(value = "restController()", returning = "result")
   public void returnApiInvocation(JoinPoint joinPoint, Object result) {
     log.info(
-      "Successful API operation {} - result: {}",
-      joinPoint.getSignature().getName(),
-      result
-    );
+        "Successful API operation {} - result: {}", joinPoint.getSignature().getName(), result);
   }
 
   @AfterReturning(
-    value = "execution(* it.gov.pagopa.afm.calculator.exception.ErrorHandler.*(..))",
-    returning = "result"
-  )
+      value = "execution(* it.gov.pagopa.afm.calculator.exception.ErrorHandler.*(..))",
+      returning = "result")
   public void trowingApiInvocation(JoinPoint joinPoint, Object result) {
     log.info("Failed API operation {} - error: {}", joinPoint.getSignature().getName(), result);
   }
@@ -114,20 +106,16 @@ public class LoggingAspect {
     Object result = joinPoint.proceed();
     long endTime = System.currentTimeMillis();
     log.trace(
-      "Time taken for Execution of {} is: {}ms",
-      joinPoint.getSignature().toShortString(),
-      (endTime - startTime)
-    );
+        "Time taken for Execution of {} is: {}ms",
+        joinPoint.getSignature().toShortString(),
+        (endTime - startTime));
     return result;
   }
 
   @Around(value = "repository() || service()")
   public Object logTrace(ProceedingJoinPoint joinPoint) throws Throwable {
     log.debug(
-      "Call method {} - args: {}",
-      joinPoint.getSignature().toShortString(),
-      joinPoint.getArgs()
-    );
+        "Call method {} - args: {}", joinPoint.getSignature().toShortString(), joinPoint.getArgs());
     Object result = joinPoint.proceed();
     log.debug("Return method {} - result: {}", joinPoint.getSignature().toShortString(), result);
     return result;
