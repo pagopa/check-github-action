@@ -44,13 +44,14 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            github.issues.createComment({
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'This pull request does not contain a valid label. Please add one of the following labels: `['bug', 'enhancement', 'breaking-change', 'ignore-for-release']`'
+              body: 'This pull request does not contain a valid label. Please add one of the following labels: `[bug, enhancement, breaking-change, ignore-for-release]`'
             })
             core.setFailed('Missing required labels')
+
 
   check_size:
     runs-on: ubuntu-latest
@@ -70,7 +71,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 labels: ['size/small']
-              })              
+              })
             }
 
             if (additions + deletions > 450){
@@ -80,19 +81,23 @@ jobs:
                 repo: context.repo.repo,
                 labels: ['size/large']
               })
-              github.issues.createComment({
+              github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: 'This PR exceeds the recommended size of 450 lines. Please make sure you are NOT addressing multiple issues with one PR. 
-                _Note this PR might be rejected due to its size._'
+                body: 'This PR exceeds the recommended size of 450 lines. Please make sure you are NOT addressing multiple issues with one PR. _Note this PR might be rejected due to its size._'
               })
               core.setFailed('Missing required labels')
             }
-  
+
   auto_update:
     name: Code
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+
       - name: EditorConfig-Action
         uses: zbeekman/EditorConfig-Action@v1.1.1
+        env:
+          ALWAYS_LINT_ALL_FILES: false
+          EC_FIX_ERROR: false
