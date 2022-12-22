@@ -1,8 +1,6 @@
 package src.main.java.it.gov.pagopa.afm.calculator.exception;
 
 import it.gov.pagopa.afm.calculator.model.ProblemJson;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +15,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * All Exceptions are handled by this class
@@ -39,18 +40,18 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
      */
     @Override
     public ResponseEntity<Object> handleHttpMessageNotReadable(
-        HttpMessageNotReadableException ex,
-        HttpHeaders headers,
-        HttpStatus status,
-        WebRequest request
+            HttpMessageNotReadableException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request
     ) {
         log.warn("Input not readable: ", ex);
         var errorResponse = ProblemJson
-            .builder()
-            .status(HttpStatus.BAD_REQUEST.value())
-            .title(BAD_REQUEST)
-            .detail("Invalid input format")
-            .build();
+                .builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .title(BAD_REQUEST)
+                .detail("Invalid input format")
+                .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -65,18 +66,18 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
      */
     @Override
     public ResponseEntity<Object> handleMissingServletRequestParameter(
-        MissingServletRequestParameterException ex,
-        HttpHeaders headers,
-        HttpStatus status,
-        WebRequest request
+            MissingServletRequestParameterException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request
     ) {
         log.warn("Missing request parameter", ex);
         var errorResponse = ProblemJson
-            .builder()
-            .status(HttpStatus.BAD_REQUEST.value())
-            .title(BAD_REQUEST)
-            .detail(ex.getMessage())
-            .build();
+                .builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .title(BAD_REQUEST)
+                .detail(ex.getMessage())
+                .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -91,24 +92,24 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
      */
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(
-        TypeMismatchException ex,
-        HttpHeaders headers,
-        HttpStatus status,
-        WebRequest request
+            TypeMismatchException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request
     ) {
         log.warn("Type mismatch: ", ex);
         var errorResponse = ProblemJson
-            .builder()
-            .status(HttpStatus.BAD_REQUEST.value())
-            .title(BAD_REQUEST)
-            .detail(
-                String.format(
-                    "Invalid value %s for property %s",
-                    ex.getValue(),
-                    ((MethodArgumentTypeMismatchException) ex).getName()
+                .builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .title(BAD_REQUEST)
+                .detail(
+                        String.format(
+                                "Invalid value %s for property %s",
+                                ex.getValue(),
+                                ((MethodArgumentTypeMismatchException) ex).getName()
+                        )
                 )
-            )
-            .build();
+                .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -123,10 +124,10 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
      */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
-        MethodArgumentNotValidException ex,
-        HttpHeaders headers,
-        HttpStatus status,
-        WebRequest request
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request
     ) {
         List<String> details = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -135,11 +136,11 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
         var detailsMessage = String.join(", ", details);
         log.warn("Input not valid: " + detailsMessage);
         var errorResponse = ProblemJson
-            .builder()
-            .status(HttpStatus.BAD_REQUEST.value())
-            .title(BAD_REQUEST)
-            .detail(detailsMessage)
-            .build();
+                .builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .title(BAD_REQUEST)
+                .detail(detailsMessage)
+                .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -150,7 +151,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
      * @param request from frontend
      * @return a {@link ProblemJson} as response with the cause and with an appropriated HTTP status
      */
-    @ExceptionHandler({ AppException.class })
+    @ExceptionHandler({AppException.class})
     public ResponseEntity<ProblemJson> handleAppException(final AppException ex, final WebRequest request) {
         if (ex.getCause() != null) {
             log.warn("App Exception raised: " + ex.getMessage() + "\nCause of the App Exception: ", ex.getCause());
@@ -159,11 +160,11 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
             log.warn("App Exception raised: ", ex);
         }
         var errorResponse = ProblemJson
-            .builder()
-            .status(ex.getHttpStatus().value())
-            .title(ex.getTitle())
-            .detail(ex.getMessage())
-            .build();
+                .builder()
+                .status(ex.getHttpStatus().value())
+                .title(ex.getTitle())
+                .detail(ex.getMessage())
+                .build();
         return new ResponseEntity<>(errorResponse, ex.getHttpStatus());
     }
 
@@ -174,15 +175,15 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
      * @param request from frontend
      * @return a {@link ProblemJson} as response with the cause and with 500 as HTTP status
      */
-    @ExceptionHandler({ Exception.class })
+    @ExceptionHandler({Exception.class})
     public ResponseEntity<ProblemJson> handleGenericException(final Exception ex, final WebRequest request) {
         log.error("Generic Exception raised:", ex);
         var errorResponse = ProblemJson
-            .builder()
-            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-            .title(INTERNAL_SERVER_ERROR)
-            .detail(ex.getMessage())
-            .build();
+                .builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .title(INTERNAL_SERVER_ERROR)
+                .detail(ex.getMessage())
+                .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

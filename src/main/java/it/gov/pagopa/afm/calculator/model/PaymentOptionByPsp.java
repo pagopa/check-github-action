@@ -1,10 +1,11 @@
 package src.main.java.it.gov.pagopa.afm.calculator.model;
 
-import java.util.ArrayList;
-import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.Valid;
+import java.util.ArrayList;
 
 @AllArgsConstructor
 @NoArgsConstructor

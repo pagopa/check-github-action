@@ -1,11 +1,12 @@
 package src.main.java.it.gov.pagopa.afm.calculator.exception;
 
-import java.util.Formatter;
-import javax.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.NotNull;
+import java.util.Formatter;
 
 /**
  * Custom exception.
@@ -33,10 +34,10 @@ public class AppException extends RuntimeException {
      * @param cause      The cause of this {@link AppException}
      */
     public AppException(
-        @NotNull HttpStatus httpStatus,
-        @NotNull String title,
-        @NotNull String message,
-        Throwable cause
+            @NotNull HttpStatus httpStatus,
+            @NotNull String title,
+            @NotNull String message,
+            Throwable cause
     ) {
         super(message, cause);
         this.title = title;

@@ -4,12 +4,13 @@ import it.gov.pagopa.afm.calculator.entity.ValidBundle;
 import it.gov.pagopa.afm.calculator.model.BundleType;
 import it.gov.pagopa.afm.calculator.model.PaymentOption;
 import it.gov.pagopa.afm.calculator.model.TransferListItem;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * {@link Cacheable} methods are ignored when called from within the same class
@@ -33,10 +34,10 @@ public class UtilityComponent {
      */
     public static boolean inTransferList(String creditorInstitutionFiscalCode, List<TransferListItem> transferList) {
         return transferList
-            .parallelStream()
-            .anyMatch(transferListItem ->
-                transferListItem.getCreditorInstitution().equals(creditorInstitutionFiscalCode)
-            );
+                .parallelStream()
+                .anyMatch(transferListItem ->
+                        transferListItem.getCreditorInstitution().equals(creditorInstitutionFiscalCode)
+                );
     }
 
     /**
@@ -49,13 +50,13 @@ public class UtilityComponent {
     public List<String> getTransferCategoryList(PaymentOption paymentOption) {
         log.debug("getTransferCategoryList");
         return paymentOption.getTransferList() != null
-            ? paymentOption
+                ? paymentOption
                 .getTransferList()
                 .parallelStream()
                 .map(TransferListItem::getTransferCategory)
                 .distinct()
                 .collect(Collectors.toList())
-            : null;
+                : null;
     }
 
     /**
@@ -69,13 +70,13 @@ public class UtilityComponent {
     public List<String> getPrimaryTransferCategoryList(PaymentOption paymentOption, String primaryCreditorInstitution) {
         log.debug("getPrimaryTransferCategoryList {} ", primaryCreditorInstitution);
         return paymentOption.getTransferList() != null
-            ? paymentOption
+                ? paymentOption
                 .getTransferList()
                 .parallelStream()
                 .filter(elem -> primaryCreditorInstitution.equals(elem.getCreditorInstitution()))
                 .map(TransferListItem::getTransferCategory)
                 .distinct()
                 .collect(Collectors.toList())
-            : new ArrayList<>();
+                : new ArrayList<>();
     }
 }
