@@ -104,9 +104,6 @@ jobs:
           args: "--replace"
           skip-commit: true
 
-      - name: Commit & Push changes
-        run: |
-          git config --global user.name 'action-bot' 
-          git add -A
-          git commit -m "Auto Update Openapi and Swagger" || true
-          git push
+      - name: Git Auto Commit
+        uses: stefanzweifel/git-auto-commit-action@v4.16.0
+
