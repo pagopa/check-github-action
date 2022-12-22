@@ -98,7 +98,11 @@ jobs:
 
       - name: eclint
         uses: reviewdog/action-eclint@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review # Change reporter.
-          eclint_flags: '/'
+        env:
+          # Only lint files changed in the push.
+          ALWAYS_LINT_ALL_FILES: true
+
+          # Automatic error fixing not yet supported by EditorConfig-Action.
+          # Forced off to avoid unintentionally enabling when upgrading to
+          # new version.
+          EC_FIX_ERROR: false
