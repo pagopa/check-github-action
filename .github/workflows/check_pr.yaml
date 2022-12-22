@@ -96,8 +96,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: EditorConfig-Action
-        uses: zbeekman/EditorConfig-Action@v1.1.1
-        env:
-          ALWAYS_LINT_ALL_FILES: false
-          EC_FIX_ERROR: false
+      - name: eclint
+        uses: reviewdog/action-eclint@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review # Change reporter.
+          eclint_flags: '/'
