@@ -92,6 +92,7 @@ jobs:
   
   auto_update:
     name: Code
+    runs-on: ubuntu-latest
     steps:
       - name: EditorConfig-Action
         uses: zbeekman/EditorConfig-Action@v1.1.1
