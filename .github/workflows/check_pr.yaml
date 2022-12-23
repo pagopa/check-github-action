@@ -19,6 +19,13 @@ permissions:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - uses: pre-commit/action@v3.0.0
+
   auto_assign:
     name: Auto Assign
 
@@ -95,6 +102,12 @@ jobs:
   auto_update:
     name: Code
     runs-on: ubuntu-latest
+    needs: [
+      auto_assign,
+      check_size,
+      check_labels
+    ]
+    if: ${{ always() && !cancelled() && needs.build.result == 'success' }}
     steps:
       - uses: actions/checkout@v3
         with:
