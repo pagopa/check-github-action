@@ -1,4 +1,4 @@
-name: Check PR
+name: Check PR Size
 
 # Controls when the workflow will run
 on:
