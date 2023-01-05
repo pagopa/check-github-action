@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_KEY: # TODO
+  PROJECT_KEY: key
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -58,7 +58,7 @@ jobs:
           -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.organization=pagopa \
           -Dsonar.projectKey=${{ env.PROJECT_KEY }} \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }} \ # TODO
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
           -Dsonar.coverage.exclusions=**/config/*,**/*Mock*,**/model/**,**/entity/* \
           -Dsonar.cpd.exclusions=**/model/**,**/entity/* \
           -Dsonar.branch.name=${{ github.ref_name }}

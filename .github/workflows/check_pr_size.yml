@@ -27,7 +27,7 @@ jobs:
       - name: Check Size
         uses: actions/github-script@v6.3.3
         env:
-          IGNORED_FILES: openapi.json, file2, ... # TODO
+          IGNORED_FILES: openapi.json
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
