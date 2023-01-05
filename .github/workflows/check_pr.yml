@@ -20,7 +20,7 @@ permissions:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   auto_assign:
-    if: ${{ github.event.action.opened || github.event.action.synchronize || github.event.action.reopened }}
+    if: ${{ github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened' }}
     name: Auto Assign
 
     # The type of runner that the job will run on
@@ -35,7 +35,7 @@ jobs:
           configuration-path: '.github/auto_assign.yml'
 
   check_labels:
-    if: ${{ github.event.action.opened || github.event.action.labeled ||github.event.action.unlabeled || github.event.action.reopened }}
+    if: ${{ github.event.action == 'opened' || github.event.action == 'labeled' || github.event.action == 'unlabeled' || github.event.action == 'reopened' }}
     name: Check Required Labels
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
             core.setFailed('Missing required labels')
 
   check_size:
-    if: ${{ github.event.action.opened || github.event.action.synchronize || github.event.action.reopened }}
+    if: ${{ github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened' }}
     runs-on: ubuntu-latest
     name: Check Size
     steps:
