@@ -20,7 +20,6 @@ permissions:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   auto_assign:
-    if: ${{ github.event.pull_request.opened || github.event.pull_request.synchronize || github.event.pull_request.reopened }}
     name: Auto Assign
 
     # The type of runner that the job will run on
@@ -33,6 +32,12 @@ jobs:
         uses: kentaro-m/auto-assign-action@v1.2.1
         with:
           configuration-path: '.github/auto_assign.yml'
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
 
   check_labels:
     if: ${{ github.event.pull_request.opened || github.event.pull_request.labeled ||github.event.pull_request.unlabeled || github.event.pull_request.reopened }}
