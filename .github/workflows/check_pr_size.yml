@@ -45,13 +45,12 @@ jobs:
             
                 const ignored_additions = execSync('git --no-pager  diff --numstat | grep ' + file + ' | cut -f 1', { encoding: 'utf-8' })
                 const ignored_deletions = execSync('git --no-pager  diff --numstat | grep ' + file + ' | cut -f 2', { encoding: 'utf-8' })
-            
-                ignored += (parseInt(ignored_additions) + parseInt(ignored_deletions))
+                
+                ignored += (parseInt(ignored_additions || 0) + parseInt(ignored_deletions || 0))
               }
               changes -= ignored
               console.log(ignored)
             }
-            console.log(changes)
             
             if (changes < 150){
               github.rest.issues.addLabels({
