@@ -5,65 +5,29 @@ on:
   pull_request:
     branches:
       - main
-    types: [ opened, synchronize, labeled, unlabeled, reopened, edited ]
+    types: [ opened, synchronize, reopened ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
-  repository-projects: write
-  packages: write
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  auto_assign:
-    name: Auto Assign
-
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      - name: Assign Me
-        # You may pin to the exact commit or the version.
-        uses: kentaro-m/auto-assign-action@v1.2.1
-        with:
-          configuration-path: '.github/auto_assign.yml'
-
-  check_labels:
-    name: Check Required Labels
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      - name: Verify PR Labels
-        if: ${{ !contains(github.event.pull_request.labels.*.name, 'breaking-change') && !contains(github.event.pull_request.labels.*.name, 'enhancement') && !contains(github.event.pull_request.labels.*.name, 'bug') && !contains(github.event.pull_request.labels.*.name, 'ignore-for-release') }}
-        uses: actions/github-script@v6.3.3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'This pull request does not contain a valid label. Please add one of the following labels: `[bug, enhancement, breaking-change, ignore-for-release]`'
-            })
-            core.setFailed('Missing required labels')
 
   check_size:
     runs-on: ubuntu-latest
-    name: Check Size
+    name: Check PR Size
     steps:
       - uses: actions/checkout@v3
 
       - name: Check Size
         uses: actions/github-script@v6.3.3
         env:
-          IGNORED_FILES:
+          IGNORED_FILES: openapi.json, file2, ... # TODO
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -94,6 +58,15 @@ jobs:
                 labels: ['size/small']
               })
             }
+            
+            if (changes >= 150 && changes <= 450) {
+             github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['size/medium']
+              })
+            }
 
             if (changes > 450){
               github.rest.issues.addLabels({
@@ -108,27 +81,6 @@ jobs:
                 repo: context.repo.repo,
                 body: 'This PR exceeds the recommended size of 450 lines. Please make sure you are NOT addressing multiple issues with one PR. _Note this PR might be rejected due to its size._'
               })
-              core.setFailed('Missing required labels')
+              core.setFailed('PR is too large')
             }
 
-  auto_update:
-    name: Update Code
-    runs-on: ubuntu-latest
-    needs: [
-      auto_assign,
-      check_size,
-      check_labels
-    ]
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-
-      - name: Update OpenApi and Swagger files
-        run: |
-          cd ./openapi
-          sh ./generate_openapi.sh
-
-      - uses: axel-op/googlejavaformat-action@v3
-        with:
-          args: "--replace"
