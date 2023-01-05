@@ -49,6 +49,7 @@ jobs:
               }
               changes -= ignored
             }
+            console.log(changes)
             
             if (changes < 150){
               github.rest.issues.addLabels({
