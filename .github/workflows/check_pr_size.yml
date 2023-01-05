@@ -1,4 +1,4 @@
-name: Check PR
+name: Check PR Size
 
 # Controls when the workflow will run
 on:
@@ -27,13 +27,14 @@ jobs:
       - name: Check Size
         uses: actions/github-script@v6.3.3
         env:
-          IGNORED_FILES: openapi.json, file2, ... # TODO
+          IGNORED_FILES: openapi.json
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const additions = context.payload.pull_request.additions || 0
             const deletions = context.payload.pull_request.deletions || 0
             var changes = additions + deletions
+            console.log(changes)
 
             const { IGNORED_FILES } = process.env
             const ignored_files = IGNORED_FILES.trim().split(',').filter(word => word.length > 0);
@@ -48,7 +49,9 @@ jobs:
                 ignored += (parseInt(ignored_additions) + parseInt(ignored_deletions))
               }
               changes -= ignored
+              console.log(ignored)
             }
+            console.log(changes)
             
             if (changes < 150){
               github.rest.issues.addLabels({
