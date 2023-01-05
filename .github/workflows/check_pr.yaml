@@ -19,13 +19,6 @@ permissions:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  pre-commit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-      - uses: pre-commit/action@v3.0.0
-
   auto_assign:
     name: Auto Assign
 
@@ -71,6 +64,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            console.log(context)
             const additions = context.payload.pull_request.additions || 0
             const deletions = context.payload.pull_request.deletions || 0
 
