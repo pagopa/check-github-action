@@ -43,7 +43,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Verify PR Labels
-        if: ${{ !contains(github.event.action.labels.*.name, 'breaking-change') && !contains(github.event.action.labels.*.name, 'enhancement') && !contains(github.event.action.labels.*.name, 'bug') && !contains(github.event.action.labels.*.name, 'ignore-for-release') }}
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'breaking-change') && !contains(github.event.pull_request.labels.*.name, 'enhancement') && !contains(github.event.pull_request.labels.*.name, 'bug') && !contains(github.event.pull_request.labels.*.name, 'ignore-for-release') }}
         uses: actions/github-script@v6.3.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
