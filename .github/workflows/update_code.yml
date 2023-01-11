@@ -1,4 +1,4 @@
-name: Check PR
+name: Update
 
 # Controls when the workflow will run
 on:
