@@ -13,8 +13,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  repository-projects: write
-  packages: write
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -70,7 +68,7 @@ jobs:
             const additions = context.payload.pull_request.additions || 0
             const deletions = context.payload.pull_request.deletions || 0
             var changes = additions + deletions
-            
+
             const { IGNORED_FILES } = process.env
             const ignored_files = IGNORED_FILES.trim().split(',').filter(word => word.length > 0);
             if (ignored_files.length > 0){
@@ -94,7 +92,7 @@ jobs:
                 labels: ['size/small']
               })
             }
-            
+
             if (changes > 450){
               github.rest.issues.addLabels({
                 issue_number: context.issue.number,
@@ -110,16 +108,4 @@ jobs:
               })
               core.setFailed('PR is too large')
             }
-         
 
-  formatting:
-    name: Check Format
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-
-      - uses: axel-op/googlejavaformat-action@v3
-        with:
-          args: "--skip-sorting-imports --replace"

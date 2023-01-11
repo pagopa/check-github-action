@@ -1,34 +1,29 @@
-name: Update
+name: Open a PR in Infra repository
 
-# Controls when the workflow will run
 on:
   pull_request:
     branches:
       - main
-    types: [ opened, synchronize, labeled, unlabeled, reopened ]
+    types: [ closed ]
+    paths:
+      - 'openapi/openapi.json'
 
-  # Allows you to run this workflow manually from the Actions tab
+
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+permissions:
+  contents: read
+  pull-requests: read
+  repository-projects: write
+  packages: write
+
 jobs:
-
-  auto_update:
-    name: Update Code
-    runs-on: ubuntu-20.04
-
+  pull-request:
+    if: ${{ github.event.pull_request.merged }}
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-
-      - name: Wait for tests to succeed
-        uses: lewagon/wait-on-check-action@v1.2.0
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          check-name: 'Code Review'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Update OpenApi and Swagger files
         run: |
@@ -38,4 +33,24 @@ jobs:
       - uses: axel-op/googlejavaformat-action@v3
         with:
           args: "--replace"
+
+      # prepare openapi template for infra repo
+      - run: |
+          mkdir -p "${GITHUB_WORKSPACE}/infra"
+          jq  '."servers"[0]."url" |= "${host}"' "${GITHUB_WORKSPACE}/openapi/openapi.json" > "${GITHUB_WORKSPACE}/infra/_openapi.json.tpl"
+
+      # open a PR on infra repo
+      - name: Create pull request
+        uses: jacopocarlini/action-pull-request-another-repo@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }} # TODO: set this secret in repository
+        with:
+          source_folder: 'infra'
+          destination_repo: 'pagopa/pagopa-infra'
+          destination_folder: 'src/your-path-here/v1' # TODO: set the path
+          destination_base_branch: 'main'
+          destination_head_branch: 'projectName-swagger-update' # TODO: set the name
+          user_email: 'github-bot@pagopa.it'
+          user_name: 'pagopa-github-bot'
+          allow_force_push: 'true'
 
