@@ -1,26 +1,61 @@
-name: Check PR Size
+name: Check PR
 
 # Controls when the workflow will run
 on:
   pull_request:
     branches:
       - main
-    types: [ opened, synchronize, reopened ]
+    types: [ opened, synchronize, labeled, unlabeled, reopened ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
+  repository-projects: write
+  packages: write
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  auto_assign:
+    name: Auto Assign
+
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Assign Me
+        # You may pin to the exact commit or the version.
+        uses: kentaro-m/auto-assign-action@v1.2.1
+        with:
+          configuration-path: '.github/auto_assign.yml'
+  check_labels:
+    name: Check Required Labels
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Verify PR Labels
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'breaking-change') && !contains(github.event.pull_request.labels.*.name, 'enhancement') && !contains(github.event.pull_request.labels.*.name, 'bug') && !contains(github.event.pull_request.labels.*.name, 'ignore-for-release') }}
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'This pull request does not contain a valid label. Please add one of the following labels: `[bug, enhancement, breaking-change, ignore-for-release]`'
+            })
+            core.setFailed('Missing required labels')
 
   check_size:
     runs-on: ubuntu-latest
-    name: Check PR Size
+    name: Check Size
     steps:
       - uses: actions/checkout@v3
 
@@ -34,8 +69,7 @@ jobs:
             const additions = context.payload.pull_request.additions || 0
             const deletions = context.payload.pull_request.deletions || 0
             var changes = additions + deletions
-            console.log(changes)
-
+            
             const { IGNORED_FILES } = process.env
             const ignored_files = IGNORED_FILES.trim().split(',').filter(word => word.length > 0);
             if (ignored_files.length > 0){
@@ -46,12 +80,10 @@ jobs:
                 const ignored_additions = execSync('git --no-pager  diff --numstat | grep ' + file + ' | cut -f 1', { encoding: 'utf-8' })
                 const ignored_deletions = execSync('git --no-pager  diff --numstat | grep ' + file + ' | cut -f 2', { encoding: 'utf-8' })
             
-                ignored += (parseInt(ignored_additions) + parseInt(ignored_deletions))
+                ignored += (parseInt(ignored_additions || 0) + parseInt(ignored_deletions || 0))
               }
               changes -= ignored
-              console.log(ignored)
             }
-            console.log(changes)
             
             if (changes < 150){
               github.rest.issues.addLabels({
@@ -62,15 +94,6 @@ jobs:
               })
             }
             
-            if (changes >= 150 && changes <= 450) {
-             github.rest.issues.addLabels({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                labels: ['size/medium']
-              })
-            }
-
             if (changes > 450){
               github.rest.issues.addLabels({
                 issue_number: context.issue.number,
@@ -86,4 +109,6 @@ jobs:
               })
               core.setFailed('PR is too large')
             }
+         
+
 
