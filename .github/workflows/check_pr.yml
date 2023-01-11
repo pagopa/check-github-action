@@ -13,8 +13,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  repository-projects: write
-  packages: write
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -32,6 +30,7 @@ jobs:
         uses: kentaro-m/auto-assign-action@v1.2.1
         with:
           configuration-path: '.github/auto_assign.yml'
+
   check_labels:
     name: Check Required Labels
     # The type of runner that the job will run on
@@ -111,4 +110,10 @@ jobs:
             }
          
 
-
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3 # v2 minimum required
+      - uses: axel-op/googlejavaformat-action@v3
+        with:
+          args: "--set-exit-if-changed"
