@@ -10,19 +10,12 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
-  repository-projects: write
-  packages: write
-
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
   auto_update:
     name: Update Code
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v3
