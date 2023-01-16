@@ -118,8 +118,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: ${{ steps.get_version.outputs.get_version }}
-          name: Release ${{ steps.get_version.outputs.get_version }}
+          tag: ${{ steps.get_version.outputs.version }}
+          name: Release ${{ steps.get_version.outputs.version }}
           makeLatest: latest
           generateReleaseNotes: true
 
