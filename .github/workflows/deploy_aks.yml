@@ -105,6 +105,8 @@ jobs:
           git config --global user.name "PagoPa BOT"
           git commit -m "Bump version [skip ci]"
           git push origin ${{ github.ref_name }}
+          echo ${{ steps.get_version.outputs.version }}
+          echo ${{ github }}
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
