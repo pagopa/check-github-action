@@ -101,6 +101,8 @@ jobs:
       - name: Push New Version
         run: |
           git ls-files . | grep 'pom.xml'  | xargs git add
+          git config --global user.email "bot@pagopa.it"
+          git config --global user.name "PagoPa BOT"
           git commit -m "Bump version [skip ci]"
           git push origin ${{ github.ref_name }}
 
