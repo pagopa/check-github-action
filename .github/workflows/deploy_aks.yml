@@ -63,6 +63,7 @@ jobs:
       - id: get_version
         name: Get Version
         run: |
+          echo "$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)"
           echo "version=$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> GITHUB_ENV
           echo "version=$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> GITHUB_OUTPUT
 
@@ -99,16 +100,16 @@ jobs:
 
       - name: Push New Version
         run: |
+          echo '${{ toJSON(github) }}'
+          echo '${{ toJSON(job) }}'
+          echo '${{ toJSON(steps) }}'
+          echo "${{ env }}"
+          echo "${{ steps.get_version.outputs.version }}"
           git ls-files . | grep 'pom.xml'  | xargs git add
           git config --global user.email "bot@pagopa.it"
           git config --global user.name "PagoPa BOT"
           git commit -m "Bump version [skip ci]"
           git push origin ${{ github.ref_name }}
-          echo '${{ toJSON(github) }}'
-          echo '${{ toJSON(job) }}'
-          echo '${{ toJSON(steps) }}'
-          echo "${{ env.version }}"
-          echo "${{ steps.get_version.outputs.version }}"
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
