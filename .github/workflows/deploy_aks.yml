@@ -25,6 +25,8 @@ jobs:
     name: Create a New Release
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v3
@@ -103,7 +105,7 @@ jobs:
           echo '${{ toJSON(github) }}'
           echo '${{ toJSON(job) }}'
           echo '${{ toJSON(steps) }}'
-          echo "${{ env }}"
+          echo "${{ toJSON(env) }}"
           echo "${{ steps.get_version.outputs.version }}"
           git ls-files . | grep 'pom.xml'  | xargs git add
           git config --global user.email "bot@pagopa.it"
