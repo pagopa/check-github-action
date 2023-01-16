@@ -91,21 +91,31 @@ jobs:
                 repo: context.repo.repo,
                 labels: ['size/small']
               })
-              github.rest.issues.removeLabel({
-                  issue_number: context.issue.number,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  name: 'size/large'
-              })
+              try {
+                github.rest.issues.removeLabel({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: 'size/large'
+                })
+              }
+              catch(e){
+               console.log("label not found");
+              }
             }
 
             if (changes > 450){
-              github.rest.issues.removeLabel({
-                  issue_number: context.issue.number,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  name: 'size/small'
-              })
+              try {
+                github.rest.issues.removeLabel({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: 'size/small'
+                })
+              }
+              catch(e){
+               console.log("label not found");
+              }
               github.rest.issues.addLabels({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
