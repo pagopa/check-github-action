@@ -98,7 +98,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo
               });
-              console.log(result)
+              console.log(labels)
 
               if (labels.includes('size/large')){
                 github.rest.issues.removeLabel({
@@ -129,7 +129,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo
               });
-              console.log(result)
+              console.log(labels)
 
               if (labels.includes('size/small')){
                 github.rest.issues.removeLabel({
