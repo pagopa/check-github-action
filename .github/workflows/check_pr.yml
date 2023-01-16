@@ -91,9 +91,21 @@ jobs:
                 repo: context.repo.repo,
                 labels: ['size/small']
               })
+              github.rest.issues.removeLabel({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: 'size/large'
+              })
             }
 
             if (changes > 450){
+              github.rest.issues.removeLabel({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: 'size/small'
+              })
               github.rest.issues.addLabels({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
