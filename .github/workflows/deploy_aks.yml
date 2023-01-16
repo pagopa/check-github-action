@@ -110,7 +110,7 @@ jobs:
           git ls-files . | grep 'pom.xml'  | xargs git add
           git config --global user.email "bot@pagopa.it"
           git config --global user.name "PagoPa BOT"
-          git commit -m "Bump version [skip ci]"
+          git commit -m "Bump version [skip ci]" || exit 0
           git push origin ${{ github.ref_name }}
 
       - name: Create Release
@@ -142,11 +142,8 @@ jobs:
     needs: [release, build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          # Shallow clones should be disabled for a better relevancy of analysis
-          fetch-depth:
-            0
+      - uses: actions/checkout@v3
+
       - name: Helm Setup
         run: |
           echo '${{ toJSON(github) }}'
