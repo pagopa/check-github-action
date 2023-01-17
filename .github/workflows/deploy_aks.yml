@@ -33,6 +33,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: main
+
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
@@ -109,7 +112,7 @@ jobs:
           git config --global user.email "bot@pagopa.it"
           git config --global user.name "PagoPa BOT"
           git commit -m "Bump version [skip ci]" || exit 0
-          git push origin ${{ github.ref_name }}
+          git push origin main
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
@@ -125,8 +128,11 @@ jobs:
   build:
     needs: release
     runs-on: ubuntu-latest
+    name: Build and Push Docker Image
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          ref: main
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
@@ -152,21 +158,14 @@ jobs:
   deploy:
     needs: [release, build]
     runs-on: ubuntu-latest
+    name: Deploy on AKS
     strategy:
       matrix:
         environment: [ dev, uat, prod ]
     steps:
       - uses: actions/checkout@v3
-
-      - name: Helm Setup
-        run: |
-          DEPLOY_VERSION=${{ needs.release.outputs.version }}
-          CHART_FILE="helm/Chart.yaml"
-          if [[ -f "$CHART_FILE" ]]; then
-            yq -i ".appVersion = \"$(DEPLOY_VERSION)\"" "$CHART_FILE"
-          fi
-          helm repo add microservice-chart https://pagopa.github.io/aks-microservice-chart-blueprint
-          helm dep build helm  
+        with:
+          ref: main
 
       - name: Manual Workflow Approval
         uses: trstringer/manual-approval@v1.8.0
@@ -177,6 +176,11 @@ jobs:
           minimum-approvals: 1
           issue-title: "Deploying v${{ needs.release.outputs.version }} to ${{ matrix.environment }}"
           exclude-workflow-initiator-as-approver: false
+
+      - name: Helm Setup
+        run: |
+          helm repo add microservice-chart https://pagopa.github.io/aks-microservice-chart-blueprint
+          helm dep build helm  
 
       - name: Helm Deploy
         run: |                   
