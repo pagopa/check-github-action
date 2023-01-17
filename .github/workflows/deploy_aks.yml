@@ -10,6 +10,25 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        type: choice
+        description: Select the Environment
+        options:
+          - dev
+          - uat
+          - prod
+      semver:
+        required: true
+        type: choice
+        description: Select the new Semantic Version
+        options:
+          - major
+          - minor
+          - patch
+          - buildNumber
+          - skip
 
 env:
   NAMESPACE: # TODO
@@ -54,19 +73,22 @@ jobs:
       - name: Set build-number
         run: |
           mvn build-helper:parse-version versions:set -DnewVersion='${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${parsedVersion.nextBuildNumber}-${{github.ref_name}}'
-        if: ${{ github.ref_name != 'main' }}
+        if: ${{ github.event.inputs.semver == 'buildNumber' }}
+
       - name: Set major
         run: |
           mvn build-helper:parse-version versions:set -DnewVersion='${parsedVersion.nextMajorVersion}.0.0'
-        if: ${{ contains(github.event.pull_request.labels.*.name, 'breaking-change') }}
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'breaking-change') || github.event.inputs.semver == 'major' }}
+
       - name: Set minor
         run: |
           mvn build-helper:parse-version versions:set -DnewVersion='${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0'
-        if: ${{ contains(github.event.pull_request.labels.*.name, 'enhancement') }}
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'enhancement') || github.event.inputs.semver == 'minor' }}
+
       - name: Set patch
         run: |
           mvn build-helper:parse-version versions:set -DnewVersion='${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}'
-        if: ${{ contains(github.event.pull_request.labels.*.name, 'bug') }}
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'bug') || github.event.inputs.semver == 'patch' }}
 
       - id: get_version
         name: Get Version
@@ -77,31 +99,31 @@ jobs:
       - name: Update Version Helm
         run: |
           for i in helm/values-*.yaml; do
-               [ -f "$i" ] || break
-               yq -i ".microservice-chart.image.tag = \"${{ steps.get_version.outputs.get_version }}\"" "$i"
-               git add "$i"
-             done
-             CHART_FILE="helm/Chart.yaml"
-             if [[ -f "$CHART_FILE" ]]; then
-               yq -i ".version = \"${{ steps.get_version.outputs.get_version }}\"" "$CHART_FILE"
-               yq -i ".appVersion = \"${{ steps.get_version.outputs.get_version }}\"" "$CHART_FILE"
-               git add "$CHART_FILE"
-             fi
+            [ -f "$i" ] || break
+            yq -i ".microservice-chart.image.tag = \"${{ steps.get_version.outputs.version }}\"" "$i"
+            git add "$i"
+          done
+          CHART_FILE="helm/Chart.yaml"
+          if [[ -f "$CHART_FILE" ]]; then
+            yq -i ".version = \"${{ steps.get_version.outputs.version }}\"" "$CHART_FILE"
+            yq -i ".appVersion = \"${{ steps.get_version.outputs.version }}\"" "$CHART_FILE"
+            git add "$CHART_FILE"
+          fi
       - name: Update Openapi/Swagger Version
         run: |
           for i in openapi/*.json; do
             [ -f "$i" ] || break
-            cat <<< "$(jq ".info.version = \"${{ steps.get_version.outputs.get_version }}\"" "$i")" > "$i"
+            cat <<< "$(jq ".info.version = \"${{ steps.get_version.outputs.version }}\"" "$i")" > "$i"
             git add $i
           done
           for i in openapi/*.yaml; do
             [ -f "$i" ] || break
-            yq -i ".info.version = \"${{ steps.get_version.outputs.get_version }}\"" "$i"
+            yq -i ".info.version = \"${{ steps.get_version.outputs.version }}\"" "$i"
             git add "$i"
           done
           for i in openapi/*.yml; do
             [ -f "$i" ] || break
-            yq -i ".info.version = \"${{ steps.get_version.outputs.get_version }}\"" "$i"
+            yq -i ".info.version = \"${{ steps.get_version.outputs.version }}\"" "$i"
             git add "$i"
           done
 
@@ -146,12 +168,18 @@ jobs:
         uses: docker/metadata-action@v4.3.0
         with:
           images: ${{ github.event.repository.name }}
+          tags: |
+            type=sha
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
@@ -164,25 +192,28 @@ jobs:
         environment: [ dev, uat, prod ]
     steps:
       - uses: actions/checkout@v3
+        if: ${{ github.event.inputs.environment == null || matrix.environment == github.event.inputs.environment }}
         with:
           ref: main
 
       - name: Manual Workflow Approval
         uses: trstringer/manual-approval@v1.8.0
-        if: ${{ matrix.environment != 'dev' }}
+        if: ${{ matrix.environment != 'dev' && (github.event.inputs.environment == null || matrix.environment == github.event.inputs.environment) }}
         with:
           secret: ${{ github.TOKEN }}
-          approvers: pagopa-team, jacopocarlini
+          approvers: jacopocarlini
           minimum-approvals: 1
           issue-title: "Deploying v${{ needs.release.outputs.version }} to ${{ matrix.environment }}"
           exclude-workflow-initiator-as-approver: false
 
       - name: Helm Setup
+        if: ${{ github.event.inputs.environment == null || matrix.environment == github.event.inputs.environment }}
         run: |
           helm repo add microservice-chart https://pagopa.github.io/aks-microservice-chart-blueprint
           helm dep build helm  
 
       - name: Helm Deploy
+        if: ${{ github.event.inputs.environment == null || matrix.environment == github.event.inputs.environment }}
         run: |                   
           helm upgrade --namespace ${{ env.NAMESPACE }}
             --install --values ./helm/values-${{ matrix.environment }}.yaml 
