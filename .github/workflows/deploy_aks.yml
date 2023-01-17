@@ -206,20 +206,20 @@ jobs:
           issue-title: "Deploying v${{ needs.release.outputs.version }} to ${{ matrix.environment }}"
           exclude-workflow-initiator-as-approver: false
 
-      - name: Helm Setup
-        if: ${{ github.event.inputs.environment == null || matrix.environment == github.event.inputs.environment }}
-        run: |
-          helm repo add microservice-chart https://pagopa.github.io/aks-microservice-chart-blueprint
-          helm dep build helm  
-
-      - name: Helm Deploy
-        if: ${{ github.event.inputs.environment == null || matrix.environment == github.event.inputs.environment }}
-        run: |                   
-          helm upgrade --namespace ${{ env.NAMESPACE }}
-            --install --values ./helm/values-${{ matrix.environment }}.yaml 
-            --set microservice-chart.image.tag=${{ needs.release.outputs.version }} 
-            --wait --timeout 5m0s 
-            ${{ env.APP_NAME }} ./helm
+#      - name: Helm Setup
+#        if: ${{ github.event.inputs.environment == null || matrix.environment == github.event.inputs.environment }}
+#        run: |
+#          helm repo add microservice-chart https://pagopa.github.io/aks-microservice-chart-blueprint
+#          helm dep build helm
+#
+#      - name: Helm Deploy
+#        if: ${{ github.event.inputs.environment == null || matrix.environment == github.event.inputs.environment }}
+#        run: |
+#          helm upgrade --namespace ${{ env.NAMESPACE }}
+#            --install --values ./helm/values-${{ matrix.environment }}.yaml
+#            --set microservice-chart.image.tag=${{ needs.release.outputs.version }}
+#            --wait --timeout 5m0s
+#            ${{ env.APP_NAME }} ./helm
 
         # TODO log deployment successful on App Insights
 
@@ -234,3 +234,6 @@ jobs:
           footer: 'Linked to Repo <{repo_url}|{repo}>'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+
+ # TODO: integration test
+ # TODO: add terraform apply of the new openapi.json
