@@ -1,7 +1,6 @@
 name: Update Code
 
 on:
-  push:
   workflow_run:
     workflows:
       - Auto Deploy
