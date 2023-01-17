@@ -6,6 +6,7 @@
     "termsOfService": "https://www.pagopa.gov.it/",
     "version": "4.0.2"
   },
+
   "servers": [
     {
       "url": "http://127.0.0.1:8585",
