@@ -168,7 +168,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4.3.0
         with:
-          images: ${{ github.event.repository.name }}
+          images: ghcr.io/${{ github.repository }}
           tags: |
             latest
             ${{ needs.release.outputs.version }}
