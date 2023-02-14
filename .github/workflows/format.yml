@@ -1,0 +1,19 @@
+name: Open a PR in Infra repository
+
+on:
+  push:
+
+
+  workflow_dispatch:
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: axel-op/googlejavaformat-action@v3
+        with:
+          args: "--replace"
+          commit-message: "Google Java format [skip ci]"
