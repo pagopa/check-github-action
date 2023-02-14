@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaafmmarketplacebe
-    tag: "4.0.2-1-main"
+    tag: "4.0.2-2-format"
     pullPolicy: Always
   livenessProbe:
     httpGet:
