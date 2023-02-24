@@ -72,9 +72,9 @@ jobs:
 #          helm_upgrade_options: ${{env.OPTIONS}}
 
   deploy_dev:
-    if: ${{ inputs.environment == 'dev' || inputs.environment == 'all' }}
-    environment:
-      name: dev
+#    if: ${{ inputs.environment == 'dev' || inputs.environment == 'all' }}
+#    environment:
+#      name: dev
     uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
     with:
       target: ${{ matrix.target }}
@@ -93,46 +93,46 @@ jobs:
     secrets:
       token: ${{secrets.BOT_TOKEN_GITHUB}}
 
-  deploy_uat:
-    if: ${{ inputs.environment == 'uat' || inputs.environment == 'all' }}
-    environment:
-      name: uat
-    uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
-    with:
-      target: ${{ matrix.target }}
-      branch: ${{ github.ref_name }}
-      client_id: ${{ vars.CLIENT_ID }}
-      subscription_id: ${{ vars.SUBSCRIPTION_ID }}
-      tenant_id: ${{ vars.TENANT_ID }}
-      env: 'uat'
-      namespace: ${{ env.NAMESPACE }}
-      cluster_name: pagopa-d-weu-uat-aks
-      cluster_resource_group: pagopa-d-weu-uat-aks-rg
-      app_name: ${{ env.APP_NAME }}
-      helm_upgrade_options: ${{env.OPTIONS}}
-      container_app_env: 'github-runner'
-      container_resource_group: 'github-runner-rg'
-    secrets:
-      token: ${{secrets.BOT_TOKEN_GITHUB}}
-
-  deploy_prod:
-    if: ${{ inputs.environment == 'prod' || inputs.environment == 'all' }}
-    environment:
-      name: prod
-    uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
-    with:
-      target: ${{ matrix.target }}
-      branch: ${{ github.ref_name }}
-      client_id: ${{ vars.CLIENT_ID }}
-      subscription_id: ${{ vars.SUBSCRIPTION_ID }}
-      tenant_id: ${{ vars.TENANT_ID }}
-      env: 'prod'
-      namespace: ${{ env.NAMESPACE }}
-      cluster_name: pagopa-d-weu-prod-aks
-      cluster_resource_group: pagopa-d-weu-prod-aks-rg
-      app_name: ${{ env.APP_NAME }}
-      helm_upgrade_options: ${{env.OPTIONS}}
-      container_app_env: 'github-runner'
-      container_resource_group: 'github-runner-rg'
-    secrets:
-      token: ${{secrets.BOT_TOKEN_GITHUB}}
+#  deploy_uat:
+#    if: ${{ inputs.environment == 'uat' || inputs.environment == 'all' }}
+#    environment:
+#      name: uat
+#    uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
+#    with:
+#      target: ${{ matrix.target }}
+#      branch: ${{ github.ref_name }}
+#      client_id: ${{ vars.CLIENT_ID }}
+#      subscription_id: ${{ vars.SUBSCRIPTION_ID }}
+#      tenant_id: ${{ vars.TENANT_ID }}
+#      env: 'uat'
+#      namespace: ${{ env.NAMESPACE }}
+#      cluster_name: pagopa-d-weu-uat-aks
+#      cluster_resource_group: pagopa-d-weu-uat-aks-rg
+#      app_name: ${{ env.APP_NAME }}
+#      helm_upgrade_options: ${{env.OPTIONS}}
+#      container_app_env: 'github-runner'
+#      container_resource_group: 'github-runner-rg'
+#    secrets:
+#      token: ${{secrets.BOT_TOKEN_GITHUB}}
+#
+#  deploy_prod:
+#    if: ${{ inputs.environment == 'prod' || inputs.environment == 'all' }}
+#    environment:
+#      name: prod
+#    uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
+#    with:
+#      target: ${{ matrix.target }}
+#      branch: ${{ github.ref_name }}
+#      client_id: ${{ vars.CLIENT_ID }}
+#      subscription_id: ${{ vars.SUBSCRIPTION_ID }}
+#      tenant_id: ${{ vars.TENANT_ID }}
+#      env: 'prod'
+#      namespace: ${{ env.NAMESPACE }}
+#      cluster_name: pagopa-d-weu-prod-aks
+#      cluster_resource_group: pagopa-d-weu-prod-aks-rg
+#      app_name: ${{ env.APP_NAME }}
+#      helm_upgrade_options: ${{env.OPTIONS}}
+#      container_app_env: 'github-runner'
+#      container_resource_group: 'github-runner-rg'
+#    secrets:
+#      token: ${{secrets.BOT_TOKEN_GITHUB}}
