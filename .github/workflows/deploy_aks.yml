@@ -83,11 +83,11 @@ jobs:
       subscription_id: ${{ vars.SUBSCRIPTION_ID }}
       tenant_id: ${{ vars.TENANT_ID }}
       env: 'dev'
-      namespace: ${{ env.NAMESPACE }}
+      namespace: apiconfig
       cluster_name: pagopa-d-weu-dev-aks
       cluster_resource_group: pagopa-d-weu-dev-aks-rg
-      app_name: ${{ env.APP_NAME }}
-      helm_upgrade_options: ${{env.OPTIONS}}
+      app_name: pagopaapiconfig
+      helm_upgrade_options: ''
       container_app_env: 'github-runner'
       container_resource_group: 'github-runner-rg'
     secrets:
