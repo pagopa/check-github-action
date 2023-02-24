@@ -41,7 +41,6 @@ permissions:
 
 jobs:
   deploy:
-    needs: [create_runner]
     runs-on: [self-hosted, "${{ needs.create_runner.outputs.runner_name }}"]
     name: Deploy on AKS
     strategy:
