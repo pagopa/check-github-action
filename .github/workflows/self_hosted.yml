@@ -19,7 +19,6 @@ on:
     secrets:
       token:
         required: true
-        type: string
         description: Github Token
 
 env:
