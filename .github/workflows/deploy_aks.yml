@@ -86,6 +86,6 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       matrix: ${{ matrix.environment }}
-      helm_upgrade_options: '--set microservice-chart.canaryDelivery.deployment.image.tag=0.29.1'
+      beta: ${{ inputs.beta }}
     secrets:
       token: ${{secrets.BOT_TOKEN_GITHUB}}
