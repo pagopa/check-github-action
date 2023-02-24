@@ -49,7 +49,7 @@ on:
         type: string
         default: ''
     secrets:
-      github_token:
+      token:
         required: true
         type: string
         description: Github Token
@@ -80,7 +80,7 @@ jobs:
           subscription_id: ${{ inputs.subscription_id }}
           container_app_environment_name: ${{ inputs.container_app_env }}
           resource_group_name: ${{ inputs.container_resource_group }}
-          pat_token: ${{ inputs.github_token }}
+          pat_token: ${{ inputs.token }}
 
   deploy:
     needs: [create_runner]
@@ -118,4 +118,4 @@ jobs:
           subscription_id: ${{ inputs.subscription_id }}
           resource_group_name: ${{ inputs.resource_group }}
           runner_name: ${{ needs.create_runner.outputs.runner_name }}
-          pat_token: ${{ inputs.github_token }}
+          pat_token: ${{ inputs.token }}

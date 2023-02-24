@@ -91,7 +91,7 @@ jobs:
       container_app_env: 'github-runner'
       container_resource_group: 'github-runner-rg'
     secrets:
-      github_token: ${{secrets.BOT_TOKEN_GITHUB}}
+      token: ${{secrets.BOT_TOKEN_GITHUB}}
 
   deploy_uat:
     if: ${{ inputs.environment == 'uat' || inputs.environment == 'all' }}
@@ -113,7 +113,7 @@ jobs:
       container_app_env: 'github-runner'
       container_resource_group: 'github-runner-rg'
     secrets:
-      github_token: ${{secrets.BOT_TOKEN_GITHUB}}
+      token: ${{secrets.BOT_TOKEN_GITHUB}}
 
   deploy_prod:
     if: ${{ inputs.environment == 'prod' || inputs.environment == 'all' }}
@@ -135,4 +135,4 @@ jobs:
       container_app_env: 'github-runner'
       container_resource_group: 'github-runner-rg'
     secrets:
-      github_token: ${{secrets.BOT_TOKEN_GITHUB}}
+      token: ${{secrets.BOT_TOKEN_GITHUB}}
