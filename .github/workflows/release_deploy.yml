@@ -68,6 +68,7 @@ jobs:
     uses: ./.github/workflows/deploy_aks.yml
     with:
       environment: ${{inputs.environment}}
+      beta: ${{inputs.beta}}
 
   notify:
     needs: [ deploy ]

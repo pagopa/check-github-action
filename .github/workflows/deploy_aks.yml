@@ -82,10 +82,10 @@ jobs:
             short: u
           - environment : prod
             short: p
-    uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
+    uses: jacopocarlini/check-github-action/.github/workflows/self_hosted.yml@main
     with:
       environment: ${{ inputs.environment }}
       matrix: ${{ matrix.environment }}
-      helm_upgrade_options: ''
+      helm_upgrade_options: '--set microservice-chart.canaryDelivery.deployment.image.tag=0.29.1'
     secrets:
       token: ${{secrets.BOT_TOKEN_GITHUB}}
