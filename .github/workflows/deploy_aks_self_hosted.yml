@@ -48,6 +48,7 @@ on:
         description: options you can pass to helm upgrade command
         type: string
         default: ''
+    secrets:
       github_token:
         required: true
         type: string

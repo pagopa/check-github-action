@@ -74,7 +74,7 @@ jobs:
   deploy_dev:
     environment:
       name: dev
-    uses: ./.github/workflows/deploy_aks_self_hosted.yml
+    uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
     if: ${{ inputs.environment == 'dev' || inputs.environment == 'all' }}
     with:
       target: ${{ matrix.target }}
@@ -90,12 +90,13 @@ jobs:
       helm_upgrade_options: ${{env.OPTIONS}}
       container_app_env: 'github-runner'
       container_resource_group: 'github-runner-rg'
+    secrets:
       github_token: ${{secrets.BOT_TOKEN_GITHUB}}
 
   deploy_uat:
     environment:
       name: uat
-    uses: ./.github/workflows/deploy_aks_self_hosted.yml
+    uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
     if: ${{ inputs.environment == 'uat' || inputs.environment == 'all' }}
     with:
       target: ${{ matrix.target }}
@@ -111,12 +112,13 @@ jobs:
       helm_upgrade_options: ${{env.OPTIONS}}
       container_app_env: 'github-runner'
       container_resource_group: 'github-runner-rg'
+    secrets:
       github_token: ${{secrets.BOT_TOKEN_GITHUB}}
 
   deploy_prod:
     environment:
       name: prod
-    uses: ./.github/workflows/deploy_aks_self_hosted.yml
+    uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
     if: ${{ inputs.environment == 'prod' || inputs.environment == 'all' }}
     with:
       target: ${{ matrix.target }}
@@ -132,4 +134,5 @@ jobs:
       helm_upgrade_options: ${{env.OPTIONS}}
       container_app_env: 'github-runner'
       container_resource_group: 'github-runner-rg'
+    secrets:
       github_token: ${{secrets.BOT_TOKEN_GITHUB}}
