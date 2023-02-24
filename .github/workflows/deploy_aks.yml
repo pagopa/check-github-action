@@ -22,13 +22,8 @@ on:
     inputs:
       environment:
         required: true
-        type: choice
+        type: string
         description: Select the Environment
-        options:
-          - dev
-          - uat
-          - prod
-          - all
       beta:
         required: false
         type: boolean
