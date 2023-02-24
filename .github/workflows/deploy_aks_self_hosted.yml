@@ -1,7 +1,7 @@
 name: Deploy Self Hosted
 
 on:
-   workflow_call:
+  workflow_call:
     inputs:
       client_id:
         required: true
