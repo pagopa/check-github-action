@@ -7,6 +7,10 @@ on:
         required: true
         description: The name of the environment where to deploy
         type: string
+      matrix:
+        required: true
+        description: The name of the environment where to deploy
+        type: string
       helm_upgrade_options:
         required: false
         description: options you can pass to helm upgrade command
@@ -32,6 +36,7 @@ jobs:
     name: Create Runner
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
+    if: ${{ matrix.environment == inputs.environment || inputs.environment == 'all' }}
     outputs:
       runner_name: ${{ steps.create_github_runner.outputs.runner_name }}
     steps:
@@ -50,6 +55,7 @@ jobs:
   deploy:
     needs: [create_runner]
     runs-on: [self-hosted, "${{ needs.create_runner.outputs.runner_name }}"]
+    if: ${{ matrix.environment == inputs.environment || inputs.environment == 'all' }}
     name: Deploy on AKS
     steps:
       - name: Deploy

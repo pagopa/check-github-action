@@ -84,8 +84,8 @@ jobs:
             short: p
     uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
     with:
-      branch: ${{ github.ref_name }}
-      environment: ${{ matrix.environment }}
+      environment: ${{ inputs.environment }}
+      matrix: ${{ matrix.environment }}
       helm_upgrade_options: ''
     secrets:
       token: ${{secrets.BOT_TOKEN_GITHUB}}
