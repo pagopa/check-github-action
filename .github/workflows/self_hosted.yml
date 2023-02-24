@@ -36,7 +36,7 @@ jobs:
     name: Create Runner
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
-    if: ${{ matrix.environment == inputs.environment || inputs.environment == 'all' }}
+    if: ${{ inputs.matrix == inputs.environment || inputs.environment == 'all' }}
     outputs:
       runner_name: ${{ steps.create_github_runner.outputs.runner_name }}
     steps:
@@ -53,9 +53,9 @@ jobs:
           pat_token: ${{ inputs.token }}
 
   deploy:
-    needs: [create_runner]
-    runs-on: [self-hosted, "${{ needs.create_runner.outputs.runner_name }}"]
-    if: ${{ matrix.environment == inputs.environment || inputs.environment == 'all' }}
+    needs: [ create_runner ]
+    runs-on: [ self-hosted, "${{ needs.create_runner.outputs.runner_name }}" ]
+    if: ${{ inputs.matrix == inputs.environment || inputs.environment == 'all' }}
     name: Deploy on AKS
     steps:
       - name: Deploy
@@ -77,7 +77,7 @@ jobs:
     if: always()
     runs-on: ubuntu-22.04
     environment: dev-runner
-    needs: [create_runner, deploy]
+    needs: [ create_runner, deploy ]
     steps:
       - name: Cleanup GitHub Runner
         id: cleanup_github_runner
