@@ -24,14 +24,8 @@ on:
     inputs:
       semver:
         required: true
-        type: choice
+        type: string
         description: Select the new Semantic Version
-        options:
-          - major
-          - minor
-          - patch
-          - buildNumber
-          - skip
       force_push_image:
         required: false
         type: boolean
