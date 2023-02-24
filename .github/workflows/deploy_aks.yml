@@ -72,10 +72,10 @@ jobs:
 #          helm_upgrade_options: ${{env.OPTIONS}}
 
   deploy_dev:
+    if: ${{ inputs.environment == 'dev' || inputs.environment == 'all' }}
     environment:
       name: dev
     uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
-    if: ${{ inputs.environment == 'dev' || inputs.environment == 'all' }}
     with:
       target: ${{ matrix.target }}
       branch: ${{ github.ref_name }}
@@ -94,10 +94,10 @@ jobs:
       github_token: ${{secrets.BOT_TOKEN_GITHUB}}
 
   deploy_uat:
+    if: ${{ inputs.environment == 'uat' || inputs.environment == 'all' }}
     environment:
       name: uat
     uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
-    if: ${{ inputs.environment == 'uat' || inputs.environment == 'all' }}
     with:
       target: ${{ matrix.target }}
       branch: ${{ github.ref_name }}
@@ -116,10 +116,10 @@ jobs:
       github_token: ${{secrets.BOT_TOKEN_GITHUB}}
 
   deploy_prod:
+    if: ${{ inputs.environment == 'prod' || inputs.environment == 'all' }}
     environment:
       name: prod
     uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
-    if: ${{ inputs.environment == 'prod' || inputs.environment == 'all' }}
     with:
       target: ${{ matrix.target }}
       branch: ${{ github.ref_name }}
