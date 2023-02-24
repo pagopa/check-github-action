@@ -73,11 +73,10 @@ jobs:
 
   deploy_dev:
 #    if: ${{ inputs.environment == 'dev' || inputs.environment == 'all' }}
-#    environment:
-#      name: dev
+    environment:
+      name: dev
     uses: jacopocarlini/check-github-action/.github/workflows/deploy_aks_self_hosted.yml@main
     with:
-      target: ${{ matrix.target }}
       branch: ${{ github.ref_name }}
       client_id: ${{ vars.CLIENT_ID }}
       subscription_id: ${{ vars.SUBSCRIPTION_ID }}
