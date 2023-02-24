@@ -71,22 +71,63 @@ jobs:
 #          app_name: ${{ env.APP_NAME }}
 #          helm_upgrade_options: ${{env.OPTIONS}}
 
-  deploy:
-    strategy:
-      matrix:
-        environment: [dev, uat, prod]
+  deploy_dev:
+    environment:
+      name: dev
     uses: ./.github/workflows/deploy_aks_self_hosted.yml
-    if: ${{ matrix.environment == inputs.environment || inputs.environment == 'all' }}
+    if: ${{ inputs.environment == 'dev' || inputs.environment == 'all' }}
     with:
       target: ${{ matrix.target }}
       branch: ${{ github.ref_name }}
       client_id: ${{ vars.CLIENT_ID }}
       subscription_id: ${{ vars.SUBSCRIPTION_ID }}
       tenant_id: ${{ vars.TENANT_ID }}
-      env: ${{ matrix.environment }}
+      env: 'dev'
       namespace: ${{ env.NAMESPACE }}
-      cluster_name: pagopa-${{matrix.short}}-weu-dev-aks
-      cluster_resource_group: pagopa-${{matrix.short}}-weu-dev-aks-rg
+      cluster_name: pagopa-d-weu-dev-aks
+      cluster_resource_group: pagopa-d-weu-dev-aks-rg
+      app_name: ${{ env.APP_NAME }}
+      helm_upgrade_options: ${{env.OPTIONS}}
+      container_app_env: 'github-runner'
+      container_resource_group: 'github-runner-rg'
+      github_token: ${{secrets.BOT_TOKEN_GITHUB}}
+
+  deploy_uat:
+    environment:
+      name: uat
+    uses: ./.github/workflows/deploy_aks_self_hosted.yml
+    if: ${{ inputs.environment == 'uat' || inputs.environment == 'all' }}
+    with:
+      target: ${{ matrix.target }}
+      branch: ${{ github.ref_name }}
+      client_id: ${{ vars.CLIENT_ID }}
+      subscription_id: ${{ vars.SUBSCRIPTION_ID }}
+      tenant_id: ${{ vars.TENANT_ID }}
+      env: 'uat'
+      namespace: ${{ env.NAMESPACE }}
+      cluster_name: pagopa-d-weu-uat-aks
+      cluster_resource_group: pagopa-d-weu-uat-aks-rg
+      app_name: ${{ env.APP_NAME }}
+      helm_upgrade_options: ${{env.OPTIONS}}
+      container_app_env: 'github-runner'
+      container_resource_group: 'github-runner-rg'
+      github_token: ${{secrets.BOT_TOKEN_GITHUB}}
+
+  deploy_prod:
+    environment:
+      name: prod
+    uses: ./.github/workflows/deploy_aks_self_hosted.yml
+    if: ${{ inputs.environment == 'prod' || inputs.environment == 'all' }}
+    with:
+      target: ${{ matrix.target }}
+      branch: ${{ github.ref_name }}
+      client_id: ${{ vars.CLIENT_ID }}
+      subscription_id: ${{ vars.SUBSCRIPTION_ID }}
+      tenant_id: ${{ vars.TENANT_ID }}
+      env: 'prod'
+      namespace: ${{ env.NAMESPACE }}
+      cluster_name: pagopa-d-weu-prod-aks
+      cluster_resource_group: pagopa-d-weu-prod-aks-rg
       app_name: ${{ env.APP_NAME }}
       helm_upgrade_options: ${{env.OPTIONS}}
       container_app_env: 'github-runner'

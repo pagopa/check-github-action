@@ -64,6 +64,7 @@ jobs:
       force_push_image: ${{inputs.force_push_image}}
 
   deploy:
+    needs: [ release ]
     uses: ./.github/workflows/deploy_aks.yml
     with:
       environment: ${{inputs.environment}}
