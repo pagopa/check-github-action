@@ -1,4 +1,4 @@
-name: Continuous Delivery on dev core
+name: Deploy
 
 on:
   workflow_dispatch:

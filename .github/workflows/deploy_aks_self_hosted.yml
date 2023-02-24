@@ -1,4 +1,4 @@
-name: Continuous Delivery
+name: Deploy Self Hosted
 
 on:
    workflow_call:

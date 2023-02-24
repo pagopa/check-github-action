@@ -1,4 +1,4 @@
-name: Deploy
+name: Release And Deploy
 
 # Controls when the workflow will run
 on:
@@ -58,13 +58,13 @@ permissions:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   release:
-    uses: ./.github/workflows/template/release.yml
+    uses: ./.github/workflows/release.yml
     with:
       semver: ${{inputs.semver}}
       force_push_image: ${{inputs.force_push_image}}
 
   deploy:
-    uses: ./.github/workflows/template/deploy_aks.yml
+    uses: ./.github/workflows/deploy_aks.yml
     with:
       environment: ${{inputs.environment}}
 
