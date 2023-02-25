@@ -19,4 +19,4 @@ jobs:
         env:
           JSON: ${{ toJSON(github) }}
 
-      - run: exit 1
+      - run: exit 0
