@@ -51,7 +51,7 @@ jobs:
             short: u
           - environment : prod
             short: p
-    uses: ./.github/workflows/self_hosted.yml@main
+    uses: ./.github/workflows/self_hosted.yml
     with:
       environment: ${{ inputs.environment }}
       matrix: ${{ matrix.environment }}
