@@ -1,8 +1,6 @@
 name: Integration Tests
 
 on:
-  pull_request:
-
   merge_group:
     types: [checks_requested]
     branches: [main]
@@ -19,4 +17,4 @@ jobs:
         env:
           JSON: ${{ toJSON(github) }}
 
-      - run: exit 0
+      - run: exit 1
