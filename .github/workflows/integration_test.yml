@@ -1,0 +1,11 @@
+name: Integration Tests
+
+on:
+  merge_group:
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
