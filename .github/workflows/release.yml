@@ -47,7 +47,7 @@ jobs:
 
       - name: Make Release
         id: release
-        uses: pagopa/github-actions-template/maven-release@main
+        uses: pagopa/github-actions-template/maven-release@deploy_aks_beta
         with:
           semver: ${{inputs.semver}}
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
