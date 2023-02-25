@@ -1,6 +1,8 @@
 name: Integration Tests
 
 on:
+  pull_request:
+    brances: [main]
   merge_group:
     types: [checks_requested]
     branches: [main]
@@ -17,4 +19,6 @@ jobs:
         env:
           JSON: ${{ toJSON(github) }}
 
-      - run: exit 1
+      - name: PR is Ready to merge
+        run: exit 1
+        if: ${{github.event_name != 'merge_group'}}
