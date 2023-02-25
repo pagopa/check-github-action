@@ -1,11 +1,16 @@
 name: Integration Tests
 
 on:
+  pull_request:
+
   merge_group:
+    types: [checks_requested]
+    branches: [main]
 
 
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
 
