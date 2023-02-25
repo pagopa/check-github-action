@@ -40,6 +40,11 @@ jobs:
     outputs:
       version: ${{ steps.release.outputs.version }}
     steps:
+      - name: Dump GitHub context
+        run: echo $JSON
+        env:
+          JSON: ${{ toJSON(github) }}
+
       - name: Make Release
         id: release
         uses: pagopa/github-actions-template/maven-release@main
