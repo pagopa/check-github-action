@@ -8,4 +8,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Dump GitHub context
+        run: echo $JSON
+        env:
+          JSON: ${{ toJSON(github) }}
+
       - run: exit 1
