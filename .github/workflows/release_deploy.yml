@@ -56,6 +56,7 @@ jobs:
     uses: ./.github/workflows/release.yml
     with:
       semver: ${{inputs.semver}}
+    secrets:
       bot_token_github: ${{secrets.BOT_TOKEN_GITHUB}}
 
   deploy:
@@ -64,6 +65,8 @@ jobs:
     with:
       environment: ${{inputs.environment}}
       beta: ${{inputs.beta}}
+    secrets:
+      bot_token_github: ${{secrets.BOT_TOKEN_GITHUB}}
 
   notify:
     needs: [ deploy ]
