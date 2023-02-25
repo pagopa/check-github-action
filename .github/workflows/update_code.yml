@@ -73,4 +73,5 @@ jobs:
               repo: context.repo.repo,
               body: 'Update Code is failed. Please retry.'
             })
+            core.setFailed('Missing required labels')
 
