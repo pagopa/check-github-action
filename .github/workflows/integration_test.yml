@@ -22,3 +22,8 @@ jobs:
       - name: PR is Ready to merge
         run: exit 1
         if: ${{github.event_name != 'merge_group'}}
+
+      - name: Run Integration Tests
+        run: |
+          cd ./integration-test
+          sh run_integration_test.sh dev
