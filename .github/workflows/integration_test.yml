@@ -29,10 +29,6 @@ jobs:
         env:
           JSON: ${{ toJSON(github) }}
 
-      - name: PR is Ready to merge
-        run: exit 1
-        if: ${{github.event_name == 'pull_request'}}
-
       - name: Run Integration Tests
         run: |
           cd ./integration-test
