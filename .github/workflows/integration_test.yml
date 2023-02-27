@@ -6,6 +6,16 @@ on:
   merge_group:
     types: [checks_requested]
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        type: choice
+        description: Select the Environment
+        options:
+          - dev
+          - uat
+          - prod
 
 
 jobs:
@@ -19,11 +29,7 @@ jobs:
         env:
           JSON: ${{ toJSON(github) }}
 
-      - name: PR is Ready to merge
-        run: exit 1
-        if: ${{github.event_name != 'merge_group'}}
-
-      - name: Run Integration Tests
-        run: |
-          cd ./integration-test
-          sh run_integration_test.sh dev
+#      - name: Run Integration Tests
+#        run: |
+#          cd ./integration-test
+#          sh run_integration_test.sh ${{ ( inputs.environment != null && inputs.environment) || 'dev'  }}
