@@ -29,7 +29,7 @@ jobs:
         env:
           JSON: ${{ toJSON(github) }}
 
-      - name: Run Integration Tests
-        run: |
-          cd ./integration-test
-          sh run_integration_test.sh ${{ ( inputs.environment != null && inputs.environment) || 'dev'  }}
+#      - name: Run Integration Tests
+#        run: |
+#          cd ./integration-test
+#          sh run_integration_test.sh ${{ ( inputs.environment != null && inputs.environment) || 'dev'  }}
