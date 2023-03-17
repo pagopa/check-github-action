@@ -29,7 +29,6 @@ permissions:
 jobs:
 
   deploy:
-    needs: [ create_runner ]
     runs-on: ubuntu-latest
     if: ${{ inputs.target == inputs.environment || inputs.environment == 'all' }}
     name: Deploy on AKS
